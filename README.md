@@ -1,2 +1,3 @@
-# machine_learning_tutorials
-Machine learning tutorials
+# Machine Learning Tutorials
+
+This is repo is to collect my machine learning tutorials.
