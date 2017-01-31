@@ -4,7 +4,7 @@ This repo is to collect my notes on statistical inference and machine learning.
 
 ## Statistical Inference
 
-- [Chi-Squared Test for 2x2 Contingency Table](./notebook/chi-squared_test.ipynb) 
+- [Chi-squared Test for 2x2 Contingency Table](./notebook/chi-squared_test.ipynb) 
 
 ## Machine Learning
 
