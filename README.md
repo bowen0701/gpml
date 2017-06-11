@@ -1,12 +1,6 @@
-# Introductory Statistical Machine Learning 
+# Machine Learning 
 
-This repo is to collect my notes on statistical inference and machine learning.
-
-## Statistical Inference
-
-- [Chi-Squared Test for 2x2 Contingency Table](./notebook/chi-squared_test.ipynb) 
-
-## Machine Learning
+This repo is to collect my notes and implementations for machine learning.
 
 - [Principal Component Analysis (PCA) and Singular Value Decomposition (SVD)](./notebook/pca_svd.ipynb)
 - [Correspondence Analysis](./notebook/corranal.ipynb)
