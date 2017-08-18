@@ -5,11 +5,6 @@ from __future__ import print_function
 import numpy as np
 
 
-class LogisticRegression(object):
-    def __init__(self):
-        pass
-
-
 # def sigmoid(x):
 #     """Compute the sigmoid of x.
 
@@ -190,6 +185,10 @@ class LogisticRegression(object):
 #     acc = 1 - np.mean(np.abs(Y_prediction_train - Y_train))
 #     return acc
 
+
+class LogisticRegression(object):
+    def __init__(self, learning_rate=0.01, num_iter=2000):
+        pass
 
 # def logistic_regression(X_train, Y_train, X_test, Y_test, 
 #                         num_iterations=2000, learning_rate=0.5, print_cost=False):
