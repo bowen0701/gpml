@@ -88,12 +88,12 @@ class LogisticRegression(object):
         self._num_iter = num_iter
         self._print_cost = print_cost
 
-    def _initialize_weights(self):
-        """Initialize weights.
+    def _initialize_coeffs(self):
+        """Initialize coefficients, including weights and bias.
 
         This function creates 
-        - a zero weights w of shape (dim, 1).
-        - a 0 for bias b.
+          - a zero weights w of shape (dim, 1).
+          - a 0 for bias b.
         
         Returns:
           w: A Numpy array. Initialized weights.
@@ -148,9 +148,9 @@ class LogisticRegression(object):
 
         This function optimizes (w, b) by running a gradient descent algorithm.
         That is, write down two steps and iterate through them:
-        - Calculate the cost and the gradient for the current parameters. 
-          Use propagate().
-        - Update the parameters using gradient descent rule for (w, b).
+          - Calculate the cost and the gradient for the current parameters. 
+            Use propagate().
+          - Update the parameters using gradient descent rule for (w, b).
 
         Args:
           w: A Numpy array. Initialized weights.
@@ -184,13 +184,13 @@ class LogisticRegression(object):
             if self._print_cost and i % 100 == 0:
                 print("Cost after iteration %i: %f" %(i, cost))
         
-        params = {'w': w,
+        coeffs = {'w': w,
                   'b': b}
         
         grads = {'dw': dw,
                  'db': db}
         
-        return params, grads, costs
+        return coeffs, grads, costs
 
     def fit(self, X_train, Y_train):
         """Fit logist regression.
@@ -204,10 +204,10 @@ class LogisticRegression(object):
         self._Y_train = Y_train
 
         # Initialize parameters with zeros.
-        w, b = _initialize_weights(self)
+        w, b = _initialize_coeffs(self)
 
         # Optimize using gradient descent.
-        parameters, grads, costs = _gradient_descent(self, w, b)
+        coeffs, grads, costs = _gradient_descent(self, w, b)
 
         pass
 
