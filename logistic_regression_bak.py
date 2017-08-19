@@ -58,7 +58,7 @@ def propagate(w, b, X, Y):
       w: A Numpy array. Weights of size (num_px * num_px * 3, 1)
       b: A float. Bias.
       X: A Numpy array. Data of size (num_px * num_px * 3, number of examples).
-      Y: A Numpy array. True "label" vector (containing 0 or 1) 
+      Y: A Numpy array. True 'label' vector (containing 0 or 1) 
          of size (1, number of examples).
 
     Returns:
@@ -84,8 +84,8 @@ def propagate(w, b, X, Y):
     cost = np.squeeze(cost)
     assert(cost.shape == ())
 
-    grads = {"dw": dw,
-             "db": db} 
+    grads = {'dw': dw,
+             'db': db} 
 
     return grads, cost
 
@@ -103,7 +103,7 @@ def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
       w: A Numpy array. Weights of size (num_px * num_px * 3, 1).
       b: A scalar. Bias.
       X: A Numpy array. Data of shape (num_px * num_px * 3, number of examples).
-      Y: A Numpy array. True "label" vector (containing 0 if non-cat, 1 if cat), 
+      Y: A Numpy array. True 'label' vector (containing 0 if non-cat, 1 if cat), 
         of shape (1, number of examples)
       num_iterations: A integer. Number of iterations of the optimization loop.
       learning_rate: A scalr. Learning rate of the gradient descent update rule.
@@ -135,13 +135,13 @@ def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
             costs.append(cost)
         # Print the cost every 100 training examples
         if print_cost and i % 100 == 0:
-            print("Cost after iteration %i: %f" %(i, cost))
+            print('Cost after iteration %i: %f' %(i, cost))
     
-    params = {"w": w,
-              "b": b}
+    params = {'w': w,
+              'b': b}
     
-    grads = {"dw": dw,
-             "db": db}
+    grads = {'dw': dw,
+             'db': db}
     
     return params, grads, costs
 
@@ -165,7 +165,7 @@ def predict(w, b, X):
     Y_prediction = np.zeros((1, m))
     w = w.reshape(X.shape[0], 1)
     
-    # Compute vector "A" predicting the probabilities of a label 1 
+    # Compute vector 'A' predicting the probabilities of a label 1 
     # being present in the picture.
     A = sigmoid(np.dot(w.T, X) + b)
     
@@ -187,7 +187,7 @@ def accuracy(Y_prediction, Y):
 
 
 def logistic_regression(X_train, Y_train, X_test, Y_test, 
-                        num_iterations=2000, learning_rate=0.5, print_cost=False):
+                        num_iterations=2000, learning_rate=0.005, print_cost=False):
     """Wrap-up function for logistic regression.
 
     Builds the logistic regression model by calling the function 
@@ -199,9 +199,9 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
       X_test: A Numpy array. Test set of shape (num_px * num_px * 3, m_test).
       Y_test: A Numpy array. Test labels of shape (1, m_test).
       num_iterations: An integer. Hyperparameter for the number of iterations 
-        to optimize the parameters
+        to optimize the parameters. Default: 2000.
       learning_rate: A scalar. Hyperparameter for the learning rate used 
-        in the update rule of optimize()
+        in the update rule of optimize(). Default: 0.005.
       print_cost: A Boolean. Print the cost every 100 iterations. Default: True.
     
     Returns:
@@ -216,25 +216,25 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
         num_iterations=num_iterations, learning_rate=learning_rate, 
         print_cost=print_cost)
     
-    # Retrieve parameters w and b from dictionary "parameters"
+    # Retrieve parameters w and b from dictionary 'parameters'
     w = parameters.get('w')
     b = parameters.get('b')
     
     # Predict test/train set examples.
-    Y_prediction_test = predict(w, b, X_test)
-    Y_prediction_train = predict(w, b, X_train)
+    Y_pred_train = predict(w, b, X_train)
+    Y_pred_test = predict(w, b, X_test)
 
     # Print train/test Errors
-    print("Train accuracy: {} %"
-          .format(accuracy(Y_prediction_train, Y_train) * 100))
-    print("Test accuracy: {} %"
-          .format(accuracy(Y_prediction_test, Y_test) * 100))
+    print('Train accuracy: {} %'
+          .format(accuracy(Y_pred_train, Y_train) * 100))
+    print('Test accuracy: {} %'
+          .format(accuracy(Y_pred_test, Y_test) * 100))
     
-    d = {"costs": costs,
-         "Y_prediction_test": Y_prediction_test, 
-         "Y_prediction_train" : Y_prediction_train, 
-         "w" : w, 
-         "b" : b,
-         "learning_rate" : learning_rate,
-         "num_iterations": num_iterations}
+    d = {'costs': costs,
+         'Y_pred_train': Y_pred_train, 
+         'Y_pred_test': Y_pred_test, 
+         'w': w, 
+         'b': b,
+         'learning_rate': learning_rate,
+         'num_iterations': num_iterations}
     return d
