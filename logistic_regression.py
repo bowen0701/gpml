@@ -188,7 +188,10 @@ import numpy as np
 
 class LogisticRegression(object):
     def __init__(self, learning_rate=0.01, num_iter=2000):
-        pass
+        self._learning_rate = learning_rate
+        self._num_iter = num_iter
+        
+    
 
 # def logistic_regression(X_train, Y_train, X_test, Y_test, 
 #                         num_iterations=2000, learning_rate=0.5, print_cost=False):
