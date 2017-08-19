@@ -5,17 +5,7 @@ from __future__ import print_function
 import numpy as np
 
 
-# def sigmoid(x):
-#     """Compute the sigmoid of x.
 
-#     Args:
-#       x: A scalar or numpy array of any size.
-
-#     Returns:
-#       s: sigmoid(x).
-#     """
-#     s = 1 / (1 + np.exp(-x))    
-#     return s
 
 # def sigmoid_derivative(s):
 #     """Compute the gradient of the sigmoid function.
@@ -30,120 +20,6 @@ import numpy as np
 #     return ds
 
 
-# def initialize_weights(dim):
-#     """Initialize weights.
-
-#     This function creates a vector of zeros of shape (dim, 1) for w and b to 0.
-    
-#     Args:
-#       dim: A integer. Size of the w vector (or number of parameters.)
-    
-#     Returns:
-#       w: A Numpy array. Initialized vector of shape (dim, 1)
-#       b: A integer. Initialized scalar (corresponds to the bias)
-#     """
-#     w = np.zeros(dim).reshape(dim, 1)
-#     b = 0
-#     assert(w.shape == (dim, 1))
-#     assert(isinstance(b, float) or isinstance(b, int))
-#     return w, b
-
-
-# def propagate(w, b, X, Y):
-#     """Forward & backward propagation.
-
-#     Implement the cost function and its gradient for the propagation.
-
-#     Args:
-#       w: A Numpy array. Weights of size (num_px * num_px * 3, 1)
-#       b: A float. Bias.
-#       X: A Numpy array. Data of size (num_px * num_px * 3, number of examples).
-#       Y: A Numpy array. True "label" vector (containing 0 or 1) 
-#          of size (1, number of examples).
-
-#     Returns:
-#       cost: A float. Negative log-likelihood cost for logistic regression.
-#       dw: A Numpy array. Gradient of the loss w.r.t. w, thus same shape as w.
-#       db: A float. Gradient of the loss w.r.t b, thus same shape as b.
-#     """
-#     m = X.shape[1]
-    
-#     # Forward propagation from X to cost.
-#     # Compute activation.
-#     A = sigmoid(np.dot(w.T, X) + b)
-#     # Compute cost.
-#     cost = - 1 / m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
-    
-#     # Backward propagation to find gradient.
-#     dw = 1 / m * np.dot(X, (A - Y).T)
-#     db = 1 / m * np.sum(A - Y)
-
-#     assert(dw.shape == w.shape)
-#     assert(db.dtype == float)
-
-#     cost = np.squeeze(cost)
-#     assert(cost.shape == ())
-
-#     grads = {"dw": dw,
-#              "db": db} 
-
-#     return grads, cost
-
-
-# def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
-#     """Optimization function.
-
-#     This function optimizes w and b by running a gradient descent algorithm.
-#     That is, write down two steps and iterate through them:
-#       1. Calculate the cost and the gradient for the current parameters. 
-#         Use propagate().
-#       2. Update the parameters using gradient descent rule for w and b.
-    
-#     Args:
-#       w: A Numpy array. Weights of size (num_px * num_px * 3, 1).
-#       b: A scalar. Bias.
-#       X: A Numpy array. Data of shape (num_px * num_px * 3, number of examples).
-#       Y: A Numpy array. True "label" vector (containing 0 if non-cat, 1 if cat), 
-#         of shape (1, number of examples)
-#       num_iterations: A integer. Number of iterations of the optimization loop.
-#       learning_rate: A scalr. Learning rate of the gradient descent update rule.
-#       print_cost: A Boolean. Print the loss every 100 steps. Default: False.
-    
-#     Returns:
-#       params: A dictionary containing the weights w and bias b.
-#       grads: A dictionary containing the gradients of the weights and bias 
-#         with respect to the cost function
-#       costs: A list of all the costs computed during the optimization, 
-#         this will be used to plot the learning curve.
-#     """   
-#     costs = []
-
-#     for i in range(num_iterations):
-#         # Cost and gradient calculation (≈ 1-4 lines of code)
-#         grads, cost = propagate(w, b, X, Y)
-        
-#         # Retrieve derivatives from grads
-#         dw = grads.get('dw')
-#         db = grads.get('db')
-        
-#         # Update rule.
-#         w -= learning_rate * dw
-#         b -= learning_rate * db
-        
-#         # Record the costs
-#         if i % 100 == 0:
-#             costs.append(cost)
-#         # Print the cost every 100 training examples
-#         if print_cost and i % 100 == 0:
-#             print("Cost after iteration %i: %f" %(i, cost))
-    
-#     params = {"w": w,
-#               "b": b}
-    
-#     grads = {"dw": dw,
-#              "db": db}
-    
-#     return params, grads, costs
 
 
 # def predict(w, b, X):
@@ -185,13 +61,156 @@ import numpy as np
 #     acc = 1 - np.mean(np.abs(Y_prediction_train - Y_train))
 #     return acc
 
+def sigmoid(x):
+    """Compute the sigmoid of x.
+
+    Args:
+      x: A scalar or numpy array of any size.
+
+    Returns:
+      s: sigmoid(x).
+    """
+    s = 1 / (1 + np.exp(-x))    
+    return s
+
 
 class LogisticRegression(object):
-    def __init__(self, learning_rate=0.01, num_iter=2000):
+    """Logistic regression class."""
+    def __init__(self, learning_rate=0.01, num_iter=2000, print_cost=True):
+        """Create a `LogisticRegression` class.
+
+        Args:
+
+        Returns:
+
+        """
         self._learning_rate = learning_rate
         self._num_iter = num_iter
+        self._print_cost = print_cost
+
+    def _initialize_weights(self):
+        """Initialize weights.
+
+        This function creates 
+        - a zero weights w of shape (dim, 1).
+        - a 0 for bias b.
         
-    
+        Returns:
+          w: A Numpy array. Initialized weights.
+          b: A integer. Initialized bias.
+        """
+        dim = self._X_train.shape[0]
+        w = np.zeros(dim).reshape(dim, 1)
+        b = 0
+        assert(w.shape == (dim, 1))
+        assert(isinstance(b, float) or isinstance(b, int))
+        return w, b
+
+    def _propagate(self, w, b):
+        """Forward & backward propagation.
+
+        Implement the cost function and its gradient for the propagation.
+
+        Args:
+          w: A Numpy array. Weights.
+          b: A float. Bias.
+
+        Returns:
+          cost: A float. Negative log-likelihood cost for logistic regression.
+          dw: A Numpy array. Gradient of the loss w.r.t. w, thus same shape as w.
+          db: A float. Gradient of the loss w.r.t b, thus same shape as b.
+        """
+        m = self._X_train.shape[1]
+        
+        # Forward propagation from X to cost.
+        # Compute activation.
+        A = sigmoid(np.dot(w.T, self._X_train) + b)
+        
+        # Backward propagation to find gradient.
+        dw = 1 / m * np.dot(self._X_train, (A - self._Y_train).T)
+        db = 1 / m * np.sum(A - self._Y_train)
+        assert(dw.shape == w.shape)
+        assert(db.dtype == float)
+        grads = {'dw': dw,
+                 'db': db}
+
+        # Compute cost.
+        cost = - 1 / m * np.sum(
+            self._Y_train * np.log(A) + (1 - self._Y_train) * np.log(1 - A))
+        cost = np.squeeze(cost)
+        assert(cost.shape == ())
+
+        return grads, cost
+
+
+    def _gradient_descent(self, w, b):
+        """Optimization function.
+
+        This function optimizes (w, b) by running a gradient descent algorithm.
+        That is, write down two steps and iterate through them:
+        - Calculate the cost and the gradient for the current parameters. 
+          Use propagate().
+        - Update the parameters using gradient descent rule for (w, b).
+
+        Args:
+          w: A Numpy array. Initialized weights.
+          b: A integer. Initialized bias.
+
+        Returns:
+          params: A dictionary containing the weights and bias (w, b).
+          grads: A dictionary containing the gradients of the (w, b) 
+            with respect to the cost function.
+          costs: A list of all the costs computed during the optimization, 
+            this will be used to plot the learning curve.
+        """   
+        costs = []
+
+        for i in range(self._num_iterations):
+            # Cost and gradient calculation (≈ 1-4 lines of code)
+            grads, cost = _propagate(self, w, b)
+            
+            # Retrieve derivatives from grads
+            dw = grads.get('dw')
+            db = grads.get('db')
+            
+            # Update rule.
+            w -= self._learning_rate * dw
+            b -= self._learning_rate * db
+            
+            # Record the costs
+            if i % 100 == 0:
+                costs.append(cost)
+            # Print the cost every 100 training examples
+            if self._print_cost and i % 100 == 0:
+                print("Cost after iteration %i: %f" %(i, cost))
+        
+        params = {'w': w,
+                  'b': b}
+        
+        grads = {'dw': dw,
+                 'db': db}
+        
+        return params, grads, costs
+
+    def fit(self, X_train, Y_train):
+        """Fit logist regression.
+
+        Args:
+
+        Returns:
+
+        """
+        self._X_train = X_train
+        self._Y_train = Y_train
+
+        # Initialize parameters with zeros.
+        w, b = _initialize_weights(self)
+
+        # Optimize using gradient descent.
+        parameters, grads, costs = _gradient_descent(self, w, b)
+
+        pass
+
 
 # def logistic_regression(X_train, Y_train, X_test, Y_test, 
 #                         num_iterations=2000, learning_rate=0.5, print_cost=False):
