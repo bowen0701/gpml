@@ -137,13 +137,13 @@ def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
         if print_cost and i % 100 == 0:
             print('Cost after iteration %i: %f' %(i, cost))
     
-    params = {'w': w,
-              'b': b}
+    parameters = {'w': w,
+                  'b': b}
     
     grads = {'dw': dw,
              'db': db}
     
-    return params, grads, costs
+    return parameters, grads, costs
 
 
 def predict(w, b, X):
@@ -158,11 +158,11 @@ def predict(w, b, X):
       X: A Numpy array. New data of size (num_px * num_px * 3, number of examples).
     
     Returns:
-      Y_prediction: A Numpy array containing all predictions (0/1) 
+      Y_pred: A Numpy array containing all predictions (0/1) 
         for the examples in X.
     """
     m = X.shape[1]
-    Y_prediction = np.zeros((1, m))
+    Y_pred = np.zeros((1, m))
     w = w.reshape(X.shape[0], 1)
     
     # Compute vector 'A' predicting the probabilities of a label 1 
@@ -172,17 +172,17 @@ def predict(w, b, X):
     for i in range(A.shape[1]):
         # Convert probabilities a[0,i] to actual predictions p[0,i]
         if A[0, i] > 0.5:
-            Y_prediction[0, i] = 1
+            Y_pred[0, i] = 1
         else:
-            Y_prediction[0, i] = 0
+            Y_pred[0, i] = 0
     
-    assert(Y_prediction.shape == (1, m))
+    assert(Y_pred.shape == (1, m))
     
-    return Y_prediction
+    return Y_pred
 
 
-def accuracy(Y_prediction, Y):
-    acc = 1 - np.mean(np.abs(Y_prediction_train - Y_train))
+def accuracy(Y_pred, Y):
+    acc = 1 - np.mean(np.abs(Y_pred - Y_train))
     return acc
 
 
