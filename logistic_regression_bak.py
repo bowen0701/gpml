@@ -119,7 +119,7 @@ def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=False):
     costs = []
 
     for i in range(num_iterations):
-        # Cost and gradient calculation (≈ 1-4 lines of code)
+        # Cost and gradient calculation.
         grads, cost = propagate(w, b, X, Y)
         
         # Retrieve derivatives from grads
@@ -207,7 +207,7 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
     Returns:
       d: A dictionary containing information about the model.
     """    
-    # initialize parameters with zeros (≈ 1 line of code)
+    # initialize parameters with zeros.
     w, b = initialize_with_zeros(X_train.shape[0])
 
     # Gradient descent.
@@ -220,7 +220,7 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
     w = parameters.get('w')
     b = parameters.get('b')
     
-    # Predict test/train set examples (≈ 2 lines of code)
+    # Predict test/train set examples.
     Y_prediction_test = predict(w, b, X_test)
     Y_prediction_train = predict(w, b, X_train)
 
