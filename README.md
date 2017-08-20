@@ -4,7 +4,7 @@ This repo is to collect my notes and implementations for machine learning.
 
 ## Scripts
 
-- [Logistic Regression](./logistic_reg_bak.py)
+- [Logistic Regression](./logistic_regression_bak.py)
 - [Correspondence Analysis](./corranal.py)
 
 ## Notebooks / Posts
