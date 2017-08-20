@@ -38,8 +38,7 @@ def initialize_weights(dim):
 
 
 def activation(w, b, X):
-    """Activation function using sigmoid function.
-    """
+    """Activation function using sigmoid function."""
     A = sigmoid(np.dot(X, w) + b)
     return A
 
