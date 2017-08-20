@@ -5,62 +5,6 @@ from __future__ import print_function
 import numpy as np
 
 
-
-
-# def sigmoid_derivative(s):
-#     """Compute the gradient of the sigmoid function.
-    
-#     Args:
-#       s: A scalar or numpy array. Sigmoid function.
-
-#     Returns:
-#       ds: Computed gradient.
-#     """
-#     ds = s * (1 - s)    
-#     return ds
-
-
-
-
-# def predict(w, b, X):
-#     """Prediction.
-
-#     Predict whether the label is 0 or 1 using learned logistic regression 
-#     parameters (w, b)
-    
-#     Args:
-#       w: A Numpy array. Learned weights of size (num_px * num_px * 3, 1).
-#       b: A scalar. Learned bias.
-#       X: A Numpy array. New data of size (num_px * num_px * 3, number of examples).
-    
-#     Returns:
-#       Y_prediction: A Numpy array containing all predictions (0/1) 
-#         for the examples in X.
-#     """
-#     m = X.shape[1]
-#     Y_prediction = np.zeros((1, m))
-#     w = w.reshape(X.shape[0], 1)
-    
-#     # Compute vector "A" predicting the probabilities of a label 1 
-#     # being present in the picture.
-#     A = sigmoid(np.dot(w.T, X) + b)
-    
-#     for i in range(A.shape[1]):
-#         # Convert probabilities a[0,i] to actual predictions p[0,i]
-#         if A[0, i] > 0.5:
-#             Y_prediction[0, i] = 1
-#         else:
-#             Y_prediction[0, i] = 0
-    
-#     assert(Y_prediction.shape == (1, m))
-    
-#     return Y_prediction
-
-
-# def accuracy(Y_prediction, Y):
-#     acc = 1 - np.mean(np.abs(Y_prediction_train - Y_train))
-#     return acc
-
 def sigmoid(x):
     """Compute the sigmoid of x.
 
@@ -76,7 +20,7 @@ def sigmoid(x):
 
 class LogisticRegression(object):
     """Logistic regression class."""
-    def __init__(self, learning_rate=0.01, num_iter=2000, print_cost=True):
+    def __init__(self, learning_rate=0.5, num_iter=2000, print_cost=True):
         """Create a `LogisticRegression` class.
 
         Args:
@@ -99,7 +43,7 @@ class LogisticRegression(object):
           w: A Numpy array. Initialized weights.
           b: A integer. Initialized bias.
         """
-        dim = self._X_train.shape[0]
+        dim = self._X_train.shape[1]
         w = np.zeros(dim).reshape(dim, 1)
         b = 0
         assert(w.shape == (dim, 1))
@@ -210,57 +154,3 @@ class LogisticRegression(object):
         coeffs, grads, costs = _gradient_descent(self, w, b)
 
         pass
-
-
-# def logistic_regression(X_train, Y_train, X_test, Y_test, 
-#                         num_iterations=2000, learning_rate=0.5, print_cost=False):
-#     """Wrap-up function for logistic regression.
-
-#     Builds the logistic regression model by calling the function 
-#     you've implemented previously.
-    
-#     Args:
-#       X_train: A Numpy. Training set of shape (num_px * num_px * 3, m_train).
-#       Y_train: A Numpy array. Training labels of shape (1, m_train).
-#       X_test: A Numpy array. Test set of shape (num_px * num_px * 3, m_test).
-#       Y_test: A Numpy array. Test labels of shape (1, m_test).
-#       num_iterations: An integer. Hyperparameter for the number of iterations 
-#         to optimize the parameters
-#       learning_rate: A scalar. Hyperparameter for the learning rate used 
-#         in the update rule of optimize()
-#       print_cost: A Boolean. Print the cost every 100 iterations. Default: True.
-    
-#     Returns:
-#       d: A dictionary containing information about the model.
-#     """    
-#     # initialize parameters with zeros (≈ 1 line of code)
-#     w, b = initialize_with_zeros(X_train.shape[0])
-
-#     # Gradient descent.
-#     parameters, grads, costs = optimize(
-#         w, b, X_train, Y_train, 
-#         num_iterations=num_iterations, learning_rate=learning_rate, 
-#         print_cost=print_cost)
-    
-#     # Retrieve parameters w and b from dictionary "parameters"
-#     w = parameters.get('w')
-#     b = parameters.get('b')
-    
-#     # Predict test/train set examples (≈ 2 lines of code)
-#     Y_prediction_test = predict(w, b, X_test)
-#     Y_prediction_train = predict(w, b, X_train)
-
-#     # Print train/test Errors
-#     print("Train accuracy: {} %"
-#           .format(accuracy(Y_prediction_train, Y_train) * 100))
-#     print("Test accuracy: {} %"
-#           .format(accuracy(Y_prediction_test, Y_test) * 100))
-    
-#     d = {"costs": costs,
-#          "Y_prediction_test": Y_prediction_test, 
-#          "Y_prediction_train" : Y_prediction_train, 
-#          "w" : w, 
-#          "b" : b,
-#          "learning_rate" : learning_rate,
-#          "num_iterations": num_iterations}
-#     return d
