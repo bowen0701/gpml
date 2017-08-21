@@ -93,8 +93,8 @@ def propagate(w, b, X, Y):
     return grads, cost
 
 
-def optimize(w, b, X, Y, num_iterations, learning_rate, print_cost=True):
-    """Optimization function.
+def gradient_descent(w, b, X, Y, num_iterations, learning_rate, print_cost=True):
+    """Optimize using gradient descent.
 
     This function optimizes w and b by running a gradient descent algorithm.
     That is, write down two steps and iterate through them:
@@ -211,7 +211,7 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
     w, b = initialize_weights(X_train.shape[1])
 
     # Gradient descent.
-    parameters, grads, costs = optimize(
+    parameters, grads, costs = gradient_descent(
         w, b, X_train, Y_train, 
         num_iterations=num_iterations, learning_rate=learning_rate, 
         print_cost=print_cost)
