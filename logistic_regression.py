@@ -71,8 +71,8 @@ class LogisticRegression(object):
         A = sigmoid(np.dot(w.T, self._X_train) + b)
         
         # Backward propagation to find gradient.
-        dw = 1 / m * np.dot(self._X_train, (A - self._Y_train).T)
-        db = 1 / m * np.sum(A - self._Y_train)
+        dw = 1 / m * np.dot(self._X_train, (A - self._y_train).T)
+        db = 1 / m * np.sum(A - self._y_train)
         assert(dw.shape == w.shape)
         assert(db.dtype == float)
         grads = {'dw': dw,
@@ -80,7 +80,7 @@ class LogisticRegression(object):
 
         # Compute cost.
         cost = - 1 / m * np.sum(
-            self._Y_train * np.log(A) + (1 - self._Y_train) * np.log(1 - A))
+            self._y_train * np.log(A) + (1 - self._y_train) * np.log(1 - A))
         cost = np.squeeze(cost)
         assert(cost.shape == ())
 
@@ -136,7 +136,7 @@ class LogisticRegression(object):
         
         return coeffs, grads, costs
 
-    def fit(self, X_train, Y_train):
+    def fit(self, X_train, y_train):
         """Fit logist regression.
 
         Args:
@@ -145,7 +145,7 @@ class LogisticRegression(object):
 
         """
         self._X_train = X_train
-        self._Y_train = Y_train
+        self._y_train = y_train
 
         # Initialize parameters with zeros.
         w, b = _initialize_coeffs(self)
@@ -154,3 +154,5 @@ class LogisticRegression(object):
         coeffs, grads, costs = _gradient_descent(self, w, b)
 
         pass
+
+    # TODO: Continue implementing LogisticRegression class.
