@@ -42,18 +42,18 @@ def activation(w, b, X):
     A = sigmoid(np.dot(X, w) + b)
     return A
 
-def cross_entropy(Y, A, m):
+def cross_entropy(y, A, m):
     """Cross entropy."""
-    cross_entropy = - 1 / m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
+    cross_entropy = - 1 / m * np.sum(y * np.log(A) + (1 - y) * np.log(1 - A))
     return cross_entropy
 
-def gradient(X, Y, A, m):
+def gradient(X, y, A, m):
     """Gradient for weight vector and bias."""
-    dw = 1 / m * np.dot(X.T, (A - Y))
-    db = 1 / m * np.sum(A - Y)
+    dw = 1 / m * np.dot(X.T, (A - y))
+    db = 1 / m * np.sum(A - y)
     return dw, db
 
-def propagate(w, b, X, Y):
+def propagate(w, b, X, y):
     """Forward & backward propagation.
 
     Implement the cost function and its gradient for the propagation.
@@ -62,7 +62,7 @@ def propagate(w, b, X, Y):
       w: A Numpy array. Weights of size (num_px * num_px * 3, 1)
       b: A float. Bias.
       X: A Numpy array. Data of size (number of examples, num_px * num_px * 3).
-      Y: A Numpy array. True "label" vector (containing 0 or 1) 
+      y: A Numpy array. True "label" vector (containing 0 or 1) 
          of size (number of examplesm, 1).
 
     Returns:
@@ -71,16 +71,16 @@ def propagate(w, b, X, Y):
       db: A float. Gradient of the loss w.r.t b, thus same shape as b.
     """
     m = X.shape[0]
-    Y = Y.reshape((m, 1))
+    y = y.reshape((m, 1))
 
     # Forward propagation from X to cost.
     # Compute activation.
     A = activation(w, b, X)
     # Compute cost.
-    cost = cross_entropy(Y, A, m)
+    cost = cross_entropy(y, A, m)
     
     # Backward propagation to find gradient.
-    dw, db = gradient(X, Y, A, m)
+    dw, db = gradient(X, y, A, m)
     assert(dw.shape == w.shape)
     assert(db.dtype == float)
 
@@ -93,7 +93,7 @@ def propagate(w, b, X, Y):
     return grads, cost
 
 
-def gradient_descent(w, b, X, Y, num_iterations, learning_rate, print_cost=True):
+def gradient_descent(w, b, X, y, num_iterations, learning_rate, print_cost=True):
     """Optimize using gradient descent.
 
     This function optimizes w and b by running a gradient descent algorithm.
@@ -106,7 +106,7 @@ def gradient_descent(w, b, X, Y, num_iterations, learning_rate, print_cost=True)
       w: A Numpy array. Weights of size (num_px * num_px * 3, 1).
       b: A scalar. Bias.
       X: A Numpy array. Data of shape (number of examples, num_px * num_px * 3).
-      Y: A Numpy array. True "label" vector (containing 0 if non-cat, 1 if cat), 
+      y: A Numpy array. True "label" vector (containing 0 if non-cat, 1 if cat), 
         of shape (number of examples, 1)
       num_iterations: A integer. Number of iterations of the optimization loop.
       learning_rate: A scalr. Learning rate of the gradient descent update rule.
@@ -123,7 +123,7 @@ def gradient_descent(w, b, X, Y, num_iterations, learning_rate, print_cost=True)
 
     for i in range(num_iterations):
         # Cost and gradient calculation (≈ 1-4 lines of code)
-        grads, cost = propagate(w, b, X, Y)
+        grads, cost = propagate(w, b, X, y)
         
         # Retrieve derivatives from grads
         dw = grads.get('dw')
@@ -160,11 +160,11 @@ def predict(w, b, X):
       X: A Numpy array. New data of size (num_px * num_px * 3, number of examples).
     
     Returns:
-      Y_pred: A Numpy array containing all predictions (0/1) 
+      y_pred: A Numpy array containing all predictions (0/1) 
         for the examples in X.
     """
     m = X.shape[0]
-    Y_pred = np.zeros((m, 1))
+    y_pred = np.zeros((m, 1))
     
     # Compute vector "A" predicting the probabilities of a label 1.
     A = activation(w, b, X)
@@ -172,21 +172,21 @@ def predict(w, b, X):
     for i in range(A.shape[0]):
         # Convert probabilities a[i] to actual predictions y_pred[i].
         if A[i] > 0.5:
-            Y_pred[i] = 1
+            y_pred[i] = 1
         else:
-            Y_pred[i] = 0
+            y_pred[i] = 0
     
-    assert(Y_pred.shape == (m, 1))
+    assert(y_pred.shape == (m, 1))
     
-    return Y_pred
+    return y_pred
 
 
-def accuracy(Y_pred, Y):
-    acc = 1 - np.mean(np.abs(Y_pred - Y))
+def accuracy(y_pred, y):
+    acc = 1 - np.mean(np.abs(y_pred - y))
     return acc
 
 
-def logistic_regression(X_train, Y_train, X_test, Y_test, 
+def logistic_regression(X_train, y_train, X_test, y_test, 
                         num_iterations=2000, learning_rate=0.5, print_cost=True):
     '''Wrap-up function for logistic regression.
 
@@ -195,9 +195,9 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
     
     Args:
       X_train: A Numpy. Training set of shape (m_train, num_px * num_px * 3).
-      Y_train: A Numpy array. Training labels of shape (m_train, 1).
+      y_train: A Numpy array. Training labels of shape (m_train, 1).
       X_test: A Numpy array. Test set of shape (m_test, num_px * num_px * 3).
-      Y_test: A Numpy array. Test labels of shape (m_test, 1).
+      y_test: A Numpy array. Test labels of shape (m_test, 1).
       num_iterations: An integer. Hyperparameter for the number of iterations 
         to optimize the parameters. Default: 2000.
       learning_rate: A scalar. Hyperparameter for the learning rate used 
@@ -212,7 +212,7 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
 
     # Gradient descent.
     parameters, grads, costs = gradient_descent(
-        w, b, X_train, Y_train, 
+        w, b, X_train, y_train, 
         num_iterations=num_iterations, learning_rate=learning_rate, 
         print_cost=print_cost)
     
@@ -221,18 +221,18 @@ def logistic_regression(X_train, Y_train, X_test, Y_test,
     b = parameters.get('b')
     
     # Predict test/train set examples (≈ 2 lines of code)
-    Y_pred_train = predict(w, b, X_train)
-    Y_pred_test = predict(w, b, X_test)
+    y_pred_train = predict(w, b, X_train)
+    y_pred_test = predict(w, b, X_test)
 
     # Print train/test Errors
     print('Train accuracy: {} %'
-          .format(accuracy(Y_pred_train.ravel(), Y_train) * 100))
+          .format(accuracy(y_pred_train.ravel(), y_train) * 100))
     print('Test accuracy: {} %'
-          .format(accuracy(Y_pred_test.ravel(), Y_test) * 100))
+          .format(accuracy(y_pred_test.ravel(), y_test) * 100))
     
     d = {'costs': costs,
-         'Y_pred_train': Y_pred_train, 
-         'Y_pred_test': Y_pred_test, 
+         'y_pred_train': y_pred_train, 
+         'y_pred_test': y_pred_test, 
          'w': w, 
          'b': b,
          'learning_rate' : learning_rate,
