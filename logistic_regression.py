@@ -86,7 +86,6 @@ class LogisticRegression(object):
 
         return grads, cost
 
-
     def _gradient_descent(self, w, b):
         """Optimization function.
 
