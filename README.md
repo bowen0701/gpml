@@ -4,9 +4,9 @@ This repo is to collect my notes and implementations for machine learning.
 
 ## Scripts
 
-- [Logistic Regression (WIP)](./logistic_regression.py)
+- [Logistic Regression](./logistic_regression.py)
 - [Correspondence Analysis](./corranal.py)
-- [Principal Component Analysis (WIP)](./pca.py)
+- [Principal Component Analysis](./pca.py)
 
 
 ## Notebooks / Posts
