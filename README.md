@@ -1,6 +1,6 @@
 # Machine Learning 
 
-This repo is to collect my notes and implementations for machine learning.
+Machine learning notebooks and implementations in Python.
 
 ## Scripts
 
