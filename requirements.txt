@@ -14,7 +14,7 @@ virtualenv==15.1.0
 # Sklearn
 scikit-learn==0.19.0
 # XGBoost
-# On Mac: brew link gcc@5, brew link gcc@5, sudo chown -R ${usr}:admin /usr/local/${folder}
+# On Mac: brew install gcc@5, brew link gcc@5, sudo chown -R ${usr}:admin /usr/local/${folder}
 xgboost==0.6a2
 # Bayesian
 pymc3==3.2
