@@ -11,7 +11,7 @@ Machine learning notebooks and implementations in Python.
 
 ## Notebooks / Posts
 
-- [Model Evaluation Metrics](./notebook/eval_metrics.ipynb)
+- [Machine Learning Metrics](./notebook/ml_metrics.ipynb)
 - [Logistic Regression with Implementation](./notebook/logistic_reg.ipynb)
 - [Factorization Machine & Field-aware Factorization Machine](https://bowen0701.github.io/2017/06/19/ml-fm-ffm)
 - [Correspondence Analysis with Implementation](./notebook/corranal.ipynb)
