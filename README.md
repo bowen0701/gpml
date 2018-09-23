@@ -11,10 +11,9 @@ Machine learning notebooks and implementations in Python.
 
 ## Notebooks / Posts
 
-- [Machine Learning Metrics](./notebook/ml_metrics.ipynb)
 - [Logistic Regression with Implementation](./notebook/logistic_reg.ipynb)
-- [Factorization Machine & Field-aware Factorization Machine](https://bowen0701.github.io/2017/06/19/ml-fm-ffm)
 - [Correspondence Analysis with Implementation](./notebook/corranal.ipynb)
 - [PCA and SVD with Implementation](./notebook/pca_svd.ipynb)
-- [Amazon's Item-to-Item Collaborative Filtering](https://bowen0701.github.io/2016/07/22/ml-amazon-item2itemCF)
-- [Multi-Armed Bandits](https://bowen0701.github.io/2015/05/07/ml-multi-arm-bandit)
+- [Machine Learning Metrics](./notebook/ml_metrics.ipynb)
+- [Sentiment Analysis with NLP for Hotel Accommodation Reviews](./notebook/sentiment_nlp.ipynb)
+- [MSE Comparison of MLE and Bayes Estimators](./notebook/mse_mle_bayes.ipynb)
