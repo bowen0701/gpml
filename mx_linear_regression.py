@@ -27,6 +27,7 @@ class LinearRegression(object):
         b = nd.zeros(shape=(1,))
         params = [w, b]
         for param in params:
+            # Attach gradient for automatic differentiation.
             param.attach_grad()
         return params
     
@@ -38,6 +39,7 @@ class LinearRegression(object):
     
     def sgd(self, w, d):
         for param in [w, d]:
+            # Take parameter's gradient from auto diff output.
             param[:] = param - self.lr * param.grad / self.batch_size
     
     def fit(self, features, labels):
@@ -54,6 +56,7 @@ class LinearRegression(object):
         for epoch in range(self.num_epochs):
             for X, y in self.data_iter():
                 with autograd.record():
+                    # Record auto diff, perform backward differention.
                     l = loss(net(X, w, b), y)
                     l.backward()
                 self.sgd(w, b)
