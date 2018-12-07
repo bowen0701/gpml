@@ -35,12 +35,12 @@ class LinearRegression(object):
         return nd.dot(X, w) + b
     
     def squared_loss(self, y_hat, y):
-        return (y_hat - y.reshape(y_hat.shape)) ** 2 / (2 * self.batch_size)
+        return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
     
     def sgd(self, w, d):
         for param in [w, d]:
             # Take parameter's gradient from auto diff output.
-            param[:] = param - self.lr * param.grad
+            param[:] = param - self.lr * param.grad / self.batch_size
     
     def fit(self, features, labels):
         self.features = features
@@ -63,7 +63,7 @@ class LinearRegression(object):
 
             train_loss = loss(net(self.features, w, b), labels)
             print('epoch {0}: loss {1}'
-                  .format(epoch + 1, nd.sum(train_loss).asnumpy()))
+                  .format(epoch + 1, train_loss.mean().asnumpy()))
         
         self.w, self.b = w, b
         return self
