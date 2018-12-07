@@ -35,12 +35,12 @@ class LinearRegression(object):
         return nd.dot(X, w) + b
     
     def squared_loss(self, y_hat, y):
-        return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
+        return (y_hat - y.reshape(y_hat.shape)) ** 2 / (2 * self.batch_size)
     
     def sgd(self, w, d):
         for param in [w, d]:
             # Take parameter's gradient from auto diff output.
-            param[:] = param - self.lr * param.grad / self.batch_size
+            param[:] = param - self.lr * param.grad
     
     def fit(self, features, labels):
         self.features = features
@@ -56,7 +56,7 @@ class LinearRegression(object):
         for epoch in range(self.num_epochs):
             for X, y in self.data_iter():
                 with autograd.record():
-                    # Record auto diff, perform backward differention.
+                    # Record auto diff & perform backward differention.
                     l = loss(net(X, w, b), y)
                     l.backward()
                 self.sgd(w, b)
