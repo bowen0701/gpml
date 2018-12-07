@@ -19,8 +19,7 @@ class LinearRegression(object):
         random.shuffle(idx)
         for i in range(0, num_examples, self.batch_size):
             idx_batch = nd.array(idx[i:min(i + self.batch_size, self.num_examples)])
-            yield (nd.take(self.features, idx_batch), 
-                   nd.take(self.labels, idx_batch))
+            yield self.features.take(idx_batch), self.labels.take(idx_batch)
     
     def weights_init(self):
         w = nd.random.normal(scale=0.01, shape=(self.num_inputs, 1))
