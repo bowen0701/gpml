@@ -9,6 +9,7 @@ from mxnet.gluon import loss as gloss
 
 
 class LinearRegression(object):
+    """MXNet/Gluon implementation of Linear Regression."""
     def __init__(self, batch_size=10, lr=0.01, num_epochs=5):
         self.batch_size = batch_size
         self.lr = lr
