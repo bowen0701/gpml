@@ -21,6 +21,9 @@ class LinearRegression(object):
             idx_batch = nd.array(idx[i:min(i + self.batch_size, self.num_examples)])
             yield self.features.take(idx_batch), self.labels.take(idx_batch)
     
+    def linreg(self, X, w, b):
+        return nd.dot(X, w) + b
+
     def weights_init(self):
         w = nd.random.normal(scale=0.01, shape=(self.num_inputs, 1))
         b = nd.zeros(shape=(1,))
@@ -29,9 +32,6 @@ class LinearRegression(object):
             # Attach gradient for automatic differentiation.
             param.attach_grad()
         return params
-    
-    def linreg(self, X, w, b):
-        return nd.dot(X, w) + b
     
     def squared_loss(self, y_hat, y):
         return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
