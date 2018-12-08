@@ -46,18 +46,17 @@ class LinearRegression(object):
         self.labels = labels
         self.num_examples = features.shape[0]
         self.num_inputs = features.shape[1]
-        
-        w, b = self.weights_init()
-        
+                
         net = self.linreg
+        w, b = self.weights_init()
         loss = self.squared_loss
 
         for epoch in range(self.num_epochs):
             for X, y in self.data_iter():
+                # Record auto diff & perform backward differention.
                 with autograd.record():
-                    # Record auto diff & perform backward differention.
                     l = loss(net(X, w, b), y)
-                    l.backward()
+                l.backward()
                 self.sgd(w, b)
 
             train_loss = loss(net(self.features, w, b), labels)
@@ -80,10 +79,10 @@ def main():
     labels += nd.random.normal(scale=0.01, shape=labels.shape)
 
     linreg = LinearRegression(batch_size=10, lr=0.02, num_epochs=5)
-
     linreg.fit(features, labels)
-    print('w, true_w: {}, {}'.format(linreg.w, true_w))
-    print('b, true_b: {}, {}'.format(linreg.b, true_b))
+    
+    print('w, true_w: {0}, {1}'.format(linreg.w, true_w))
+    print('b, true_b: {0}, {1}'.format(linreg.b, true_b))
 
 
 if __name__ == '__main__':
