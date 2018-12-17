@@ -21,11 +21,6 @@ def main():
 
     x = np.array([1, 2, 3])
     y = np.array([2, 3, 4])
-
-    start_time = time.time()
-    print('Inner product: {}'.format(inner_product(x, y)))
-    print('Time: {}'.format(time.time() - start_time))
-
     start_time = time.time()
     print('Cosine similarity: {}'.format(cosine_similarity(x, y)))
     print('Time: {}'.format(time.time() - start_time))
