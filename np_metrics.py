@@ -28,9 +28,9 @@ def correlation_coeff(x, y):
 def cosine_similarity(x, y):
     """Cosine similarity."""
     inner_prod = inner_product(x, y)
-    norm_x = inner_product(x, x)
-    norm_y = inner_product(y, y)
-    return inner_prod / math.sqrt(norm_x * norm_y)
+    norm2_x = inner_product(x, x)
+    norm2_y = inner_product(y, y)
+    return inner_prod / math.sqrt(norm2_x * norm2_y)
 
 
 def main():
