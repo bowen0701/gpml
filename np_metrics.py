@@ -17,9 +17,11 @@ def correlation_coeff(x, y):
     Note: To speed up computation, we drop normalized term (n - 1)**(-1),
     since this term is redundant after division with sqrt.
     """
-    cov = inner_product(x - x.mean(), y - y.mean())
-    var_x = inner_product(x, x)
-    var_y = inner_product(y, y)
+    x_cen = x - x.mean()
+    y_cen = y - y.mean()
+    cov = inner_product(x_cen, y_cen)
+    var_x = inner_product(x_cen, x_cen)
+    var_y = inner_product(y_cen, y_cen)
     return cov / math.sqrt(var_x * var_y)
 
 
