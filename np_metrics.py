@@ -11,6 +11,15 @@ def inner_product(x, y):
     return x.dot(y)
 
 
+def inner_product_d(x_d, y_d):
+    """Inner product for dictionaries."""
+    inner_prod = 0.0
+    for k, v in x_d.items():
+        if k in y_d:
+            inner_prod += v * y_d[k]
+    return inner_prod
+
+
 def correlation_coeff(x, y):
     """Correlation coefficient.
 
@@ -33,6 +42,16 @@ def cosine_similarity(x, y):
     return inner_prod / math.sqrt(norm2_x * norm2_y)
 
 
+def cosine_similarity_d(x_d, y_d):
+    """Cosine similarity for dictionaries."""
+    inner_prod = inner_product_d(x_d, y_d)
+    x = np.array(list(x_d.values()))
+    y = np.array(list(y_d.values()))
+    norm2_x = inner_product(x, x)
+    norm2_y = inner_product(y, y)
+    return inner_prod / math.sqrt(norm2_x * norm2_y)
+
+
 def main():
     import time
 
@@ -46,6 +65,25 @@ def main():
     start_time = time.time()
     print('Cosine similarity: {}'.format(cosine_similarity(x, y)))
     print('Time: {}'.format(time.time() - start_time))
+
+    x_d = {
+        'a': 1,
+        'b': 2,
+        'c': 3,
+        'd': 4
+    }
+    y_d = {
+        'a': 2,
+        'b': 1.5,
+        'c': 0.5,
+        'e': 1
+    }
+
+    start_time = time.time()
+    print('Cosine similarity for dictionaries: {}'
+          .format(cosine_similarity_d(x_d, y_d)))
+    print('Time: {}'.format(time.time() - start_time))
+
 
 if __name__ == '__main__':
     main()
