@@ -15,35 +15,35 @@ class LinearRegression(object):
         self.lr = lr
         self.num_epochs = num_epochs
 
-    def data_iter(self):
+    def _data_iter(self):
         dataset = gdata.ArrayDataset(self.features, self.labels)
         return gdata.DataLoader(dataset, self.batch_size, shuffle=True)
 
-    def linreg(self):
+    def _linreg(self):
         net = nn.Sequential()
         net.add(nn.Dense(1))
         return net
 
-    def weights_init(self, net):
+    def _weights_init(self, net):
         net.initialize(init.Normal(sigma=0.01))
 
-    def squared_loss(self):
+    def _squared_loss(self):
         return gloss.L2Loss()
 
-    def sgd_trainer(self, net):
+    def _sgd_trainer(self, net):
         return gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': self.lr})
 
     def fit(self, features, labels):
         self.features = features
         self.labels = labels
 
-        net = self.linreg()
-        self.weights_init(net)
-        loss = self.squared_loss()
-        trainer = self.sgd_trainer(net)
+        net = self._linreg()
+        self._weights_init(net)
+        loss = self._squared_loss()
+        trainer = self._sgd_trainer(net)
 
         for epoch in list(range(self.num_epochs)):
-            for X, y in self.data_iter():
+            for X, y in self._data_iter():
                 with autograd.record():
                     l = loss(net(X), y)
                 l.backward()
