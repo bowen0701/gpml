@@ -13,7 +13,7 @@ class LinearRegression(object):
         self.lr = lr
         self.num_epochs = num_epochs
 
-    def data_iter(self):
+    def _data_iter(self):
         num_examples = self.features.shape[0]
         idx = list(range(num_examples))
         random.shuffle(idx)
@@ -21,10 +21,10 @@ class LinearRegression(object):
             idx_batch = nd.array(idx[i:min(i + self.batch_size, self.num_examples)])
             yield self.features.take(idx_batch), self.labels.take(idx_batch)
     
-    def linreg(self, X, w, b):
+    def _linreg(self, X, w, b):
         return nd.dot(X, w) + b
 
-    def weights_init(self):
+    def _weights_init(self):
         w = nd.random.normal(scale=0.01, shape=(self.num_inputs, 1))
         b = nd.zeros(shape=(1,))
         params = [w, b]
@@ -33,10 +33,10 @@ class LinearRegression(object):
             param.attach_grad()
         return params
     
-    def squared_loss(self, y_hat, y):
+    def _squared_loss(self, y_hat, y):
         return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
     
-    def sgd(self, w, d):
+    def _sgd(self, w, d):
         for param in [w, d]:
             # Take parameter's gradient from auto diff output.
             param[:] = param - self.lr * param.grad / self.batch_size
@@ -47,17 +47,17 @@ class LinearRegression(object):
         self.num_examples = features.shape[0]
         self.num_inputs = features.shape[1]
                 
-        net = self.linreg
-        w, b = self.weights_init()
-        loss = self.squared_loss
+        net = self._linreg
+        w, b = self._weights_init()
+        loss = self._squared_loss
 
         for epoch in range(self.num_epochs):
-            for X, y in self.data_iter():
+            for X, y in self._data_iter():
                 # Record auto diff & perform backward differention.
                 with autograd.record():
                     l = loss(net(X, w, b), y)
                 l.backward()
-                self.sgd(w, b)
+                self._sgd(w, b)
 
             train_loss = loss(net(self.features, w, b), labels)
             print('epoch {0}: loss {1}'
