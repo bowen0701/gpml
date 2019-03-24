@@ -7,6 +7,7 @@ import scipy as sp
 import pandas as pd
 from numpy.linalg import svd
 
+
 class CA(object):
     """Correspondence analysis (CA).
     
