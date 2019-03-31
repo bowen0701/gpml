@@ -16,7 +16,7 @@ class LinearRegression(object):
         self.num_epochs = num_epochs
 
     def _data_iter(self):
-        dataset = gdata.ArrayDataset(self.features, self.labels)
+        dataset = gdata.ArrayDataset(self.X_train, self.y_train)
         return gdata.DataLoader(dataset, self.batch_size, shuffle=True)
 
     def _linreg(self):
@@ -31,11 +31,12 @@ class LinearRegression(object):
         return gloss.L2Loss()
 
     def _sgd_trainer(self, net):
-        return gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': self.lr})
+        return gluon.Trainer(
+            net.collect_params(), 'sgd', {'learning_rate': self.lr})
 
-    def fit(self, features, labels):
-        self.features = features
-        self.labels = labels
+    def fit(self, X_train, y_train):
+        self.X_train = X_train
+        self.y_train = y_train
 
         net = self._linreg()
         self._weights_init(net)
@@ -49,31 +50,17 @@ class LinearRegression(object):
                 l.backward()
                 trainer.step(self.batch_size)
 
-            train_loss = loss(net(self.features), self.labels)
+            train_loss = loss(net(self.X_train), self.y_train)
             print('epoch {0}: loss {1}'
                   .format(epoch + 1, train_loss.mean().asnumpy()))
 
         self.net = net
         return self
 
+    # TODO: Fix bug for coef.
+    def coef(self):
+        _coef = self.net[0]
+        return [_coef.bias.data()] + _coef.weight.data()
 
-def main():
-    true_w = nd.array([2, -3.4])
-    true_b = 4.2
-
-    num_examples = 1000
-    num_input = len(true_w)
-
-    features = nd.random.normal(scale=1, shape=(num_examples, num_input))
-    labels = nd.dot(features, true_w) + true_b
-    labels += nd.random.normal(scale=0.01, shape=labels.shape)
-
-    linreg = LinearRegression(batch_size=10, lr=0.02, num_epochs=5)
-    linreg.fit(features, labels)
-
-    print('w, true_w: {0}, {1}'.format(linreg.net[0].weight.data(), true_w))
-    print('b, true_b: {0}, {1}'.format(linreg.net[0].bias.data(), true_b))
-
-
-if __name__ == '__main__':
-    main()
+    def predict(self, X_test):
+        return self.net(X_test)
