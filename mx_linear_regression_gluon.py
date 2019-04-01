@@ -57,10 +57,9 @@ class LinearRegression(object):
         self.net = net
         return self
 
-    # TODO: Fix bug for coef.
     def coef(self):
         _coef = self.net[0]
-        return [_coef.bias.data()] + _coef.weight.data()
+        return _coef.bias.data(), _coef.weight.data()
 
     def predict(self, X_test):
         return self.net(X_test)
