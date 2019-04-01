@@ -66,9 +66,8 @@ class LinearRegression(object):
         self.w, self.b = w, b
         return self
 
-    # TODO: Fix bug for coef.
     def coef(self):
-        return [self.b] + self.w
+        return self.b, self.w
 
     def predict(self, X_test):
         return self.net(X_test, self.w, self.b)
