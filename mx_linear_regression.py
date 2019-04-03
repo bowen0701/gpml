@@ -12,6 +12,12 @@ class LinearRegression(object):
         self.batch_size = batch_size
         self.lr = lr
         self.n_epochs = n_epochs
+    
+    def _linreg(self, X, w, b):
+        return nd.dot(X, w) + b
+    
+    def _squared_loss(self, y_hat, y):
+        return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
 
     def _weights_init(self):
         w = nd.random.normal(scale=0.01, shape=(self.n_inputs, 1))
@@ -21,12 +27,6 @@ class LinearRegression(object):
             # Attach gradient for automatic differentiation.
             param.attach_grad()
         return params
-    
-    def _linreg(self, X, w, b):
-        return nd.dot(X, w) + b
-    
-    def _squared_loss(self, y_hat, y):
-        return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
     
     def _sgd(self, w, d):
         for param in [w, d]:
