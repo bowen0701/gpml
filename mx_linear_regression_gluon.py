@@ -10,10 +10,10 @@ from mxnet.gluon import loss as gloss
 
 class LinearRegression(object):
     """MXNet/Gluon implementation of Linear Regression."""
-    def __init__(self, batch_size=10, lr=0.01, num_epochs=5):
+    def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
         self.batch_size = batch_size
         self.lr = lr
-        self.num_epochs = num_epochs
+        self.n_epochs = n_epochs
 
     def _data_iter(self):
         dataset = gdata.ArrayDataset(self.X_train, self.y_train)
@@ -43,7 +43,7 @@ class LinearRegression(object):
         loss = self._squared_loss()
         trainer = self._sgd_trainer(net)
 
-        for epoch in list(range(self.num_epochs)):
+        for epoch in list(range(self.n_epochs)):
             for X, y in self._data_iter():
                 with autograd.record():
                     l = loss(net(X), y)
