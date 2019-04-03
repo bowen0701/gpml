@@ -13,16 +13,6 @@ class LinearRegression(object):
         self.lr = lr
         self.n_epochs = n_epochs
 
-    def _data_iter(self):
-        idx = list(range(self.n_examples))
-        random.shuffle(idx)
-        for i in range(0, self.n_examples, self.batch_size):
-            idx_batch = nd.array(idx[i:min(i + self.batch_size, self.n_examples)])
-            yield self.X_train.take(idx_batch), self.y_train.take(idx_batch)
-    
-    def _linreg(self, X, w, b):
-        return nd.dot(X, w) + b
-
     def _weights_init(self):
         w = nd.random.normal(scale=0.01, shape=(self.n_inputs, 1))
         b = nd.zeros(shape=(1,))
@@ -32,6 +22,9 @@ class LinearRegression(object):
             param.attach_grad()
         return params
     
+    def _linreg(self, X, w, b):
+        return nd.dot(X, w) + b
+    
     def _squared_loss(self, y_hat, y):
         return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
     
@@ -39,16 +32,23 @@ class LinearRegression(object):
         for param in [w, d]:
             # Take parameter's gradient from auto diff output.
             param[:] = param - self.lr * param.grad / self.batch_size
+
+    def _data_iter(self):
+        idx = list(range(self.n_examples))
+        random.shuffle(idx)
+        for i in range(0, self.n_examples, self.batch_size):
+            idx_batch = nd.array(idx[i:min(i + self.batch_size, self.n_examples)])
+            yield self.X_train.take(idx_batch), self.y_train.take(idx_batch)
     
     def fit(self, X_train, y_train):
         self.X_train = X_train
         self.y_train = y_train
         self.n_examples = X_train.shape[0]
         self.n_inputs = X_train.shape[1]
-                
+
         net = self._linreg
-        w, b = self._weights_init()
         loss = self._squared_loss
+        w, b = self._weights_init()
 
         for epoch in range(self.n_epochs):
             for X, y in self._data_iter():
