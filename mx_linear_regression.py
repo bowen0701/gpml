@@ -43,8 +43,7 @@ class LinearRegression(object):
     def fit(self, X_train, y_train):
         self.X_train = X_train
         self.y_train = y_train
-        self.n_examples = X_train.shape[0]
-        self.n_inputs = X_train.shape[1]
+        self.n_examples, self.n_inputs = X_train.shape
 
         net = self._linreg
         loss = self._squared_loss
