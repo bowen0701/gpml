@@ -7,7 +7,7 @@ import random
 
 
 class SoftmaxRegression(object):
-	"""MXNet implementation of Softmax Regression."""
+	"""MXNet/Gluon implementation of Softmax Regression."""
 	def __init__(self, batch_size=10, lr=0.01, n_epoches):
 		self.batch_size = batch_size
 		self.lr = lr
