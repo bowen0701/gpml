@@ -5,153 +5,114 @@ from __future__ import print_function
 import numpy as np
 
 
-def sigmoid(x):
-    """Compute the sigmoid of x.
-
-    Args:
-      x: A scalar or numpy array of any size.
-
-    Returns:
-      s: sigmoid(x).
-    """
-    s = 1 / (1 + np.exp(-x))    
-    return s
-
-
 class LogisticRegression(object):
     """Logistic regression class."""
-    def __init__(self, learning_rate=0.5, num_iter=2000, print_cost=True):
-        """Create a `LogisticRegression` class.
+    def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
+        """Numpy implemenation of Logistic Regression."""
+        self._batch_size = batch_size
+        self._lr = lr
+        self._n_epochs = n_epochs
 
-        Args:
+    def _sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
 
-        Returns:
+    def _sigmoid_grad(self, z):
+        return self._sigmoid(z) * (1 - self._sigmoid(z))
 
-        """
-        self._learning_rate = learning_rate
-        self._num_iter = num_iter
-        self._print_cost = print_cost
+    def _logreg(self, X, w, b):
+        return self._sigmoid(np.dot(w.T, X) + b)
 
-    def _initialize_coeffs(self):
-        """Initialize coefficients, including weights and bias.
+    def _cross_entropy(self, y_hat, y): 
+        return -1 * np.sum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
 
-        This function creates 
-          - a zero weights w of shape (dim, 1).
-          - a 0 for bias b.
-        
-        Returns:
-          w: A Numpy array. Initialized weights.
-          b: A integer. Initialized bias.
-        """
-        dim = self._X_train.shape[1]
-        w = np.zeros(dim).reshape(dim, 1)
-        b = 0
-        assert(w.shape == (dim, 1))
-        assert(isinstance(b, float) or isinstance(b, int))
+    def _weights_init(self):
+        w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
+        b = 0.0
         return w, b
 
-    def _propagate(self, w, b):
-        """Forward & backward propagation.
-
-        Implement the cost function and its gradient for the propagation.
-
-        Args:
-          w: A Numpy array. Weights.
-          b: A float. Bias.
-
-        Returns:
-          cost: A float. Negative log-likelihood cost for logistic regression.
-          dw: A Numpy array. Gradient of the loss w.r.t. w, thus same shape as w.
-          db: A float. Gradient of the loss w.r.t b, thus same shape as b.
-        """
-        m = self._X_train.shape[1]
-        
-        # Forward propagation from X to cost.
-        # Compute activation.
-        A = sigmoid(np.dot(w.T, self._X_train) + b)
-        
-        # Backward propagation to find gradient.
-        dw = 1 / m * np.dot(self._X_train, (A - self._y_train).T)
+    def _sgd(self, X, y, w, b):
+        # TODO: Revise SGD method.
+        m = X.shape[0]
+        y_hat = self._logreg(X, w, b) 
+        dw = 1 / m * np.dot(X, (y_hat - y).T)
         db = 1 / m * np.sum(A - self._y_train)
-        assert(dw.shape == w.shape)
-        assert(db.dtype == float)
-        grads = {'dw': dw,
-                 'db': db}
-
-        # Compute cost.
-        cost = - 1 / m * np.sum(
-            self._y_train * np.log(A) + (1 - self._y_train) * np.log(1 - A))
-        cost = np.squeeze(cost)
-        assert(cost.shape == ())
-
-        return grads, cost
-
-    def _gradient_descent(self, w, b):
-        """Optimization function.
-
-        This function optimizes (w, b) by running a gradient descent algorithm.
-        That is, write down two steps and iterate through them:
-          - Calculate the cost and the gradient for the current parameters. 
-            Use propagate().
-          - Update the parameters using gradient descent rule for (w, b).
-
-        Args:
-          w: A Numpy array. Initialized weights.
-          b: A integer. Initialized bias.
-
-        Returns:
-          params: A dictionary containing the weights and bias (w, b).
-          grads: A dictionary containing the gradients of the (w, b) 
-            with respect to the cost function.
-          costs: A list of all the costs computed during the optimization, 
-            this will be used to plot the learning curve.
-        """   
-        costs = []
-
-        for i in range(self._num_iterations):
-            # Cost and gradient calculation (≈ 1-4 lines of code)
-            grads, cost = _propagate(self, w, b)
-            
-            # Retrieve derivatives from grads
-            dw = grads.get('dw')
-            db = grads.get('db')
-            
-            # Update rule.
-            w -= self._learning_rate * dw
-            b -= self._learning_rate * db
-            
-            # Record the costs
-            if i % 100 == 0:
-                costs.append(cost)
-            # Print the cost every 100 training examples
-            if self._print_cost and i % 100 == 0:
-                print("Cost after iteration %i: %f" %(i, cost))
         
-        coeffs = {'w': w,
-                  'b': b}
+        for param in [w, b]:
+            param[:] = param - self.lr * 
+
+    # def _propagate(self, w, b):
+    #     m = self._n_examples
         
-        grads = {'dw': dw,
-                 'db': db}
+    #     # Forward propagation from X to cost.
+    #     # Compute activation.
+    #     A = self._logreg(self._X_train, w, b)
         
-        return coeffs, grads, costs
+    #     # Backward propagation to find gradient.
+    #     dw = 1 / m * np.dot(self._X_train, (A - self._y_train).T)
+    #     db = 1 / m * np.sum(A - self._y_train)
+    #     grads = {'dw': dw, 'db': db}
+
+    #     # Compute cost.
+    #     cost = 
+    #     cost = np.squeeze(cost)
+
+    #     return grads, cost
+
+    # def _gradient_descent(self, w, b): 
+    #     costs = []
+
+    #     for i in range(self._num_iterations):
+    #         # Cost and gradient calculation (≈ 1-4 lines of code)
+    #         grads, cost = _propagate(self, w, b)
+            
+    #         # Retrieve derivatives from grads
+    #         dw = grads.get('dw')
+    #         db = grads.get('db')
+            
+    #         # Update rule.
+    #         w -= self._learning_rate * dw
+    #         b -= self._learning_rate * db
+            
+    #         # Record the costs
+    #         if i % 100 == 0:
+    #             costs.append(cost)
+    #         # Print the cost every 100 training examples
+    #         if self._print_cost and i % 100 == 0:
+    #             print("Cost after iteration %i: %f" %(i, cost))
+        
+    #     coeffs = {'w': w,
+    #               'b': b}
+        
+    #     grads = {'dw': dw,
+    #              'db': db}
+        
+    #     return coeffs, grads, costs
+
+    def _data_iter(self):
+        idx = list(range(self._n_examples))
+        random.shuffle(idx)
+        for i in range(0, self._n_examples, self._batch_size):
+            idx_batch = np.array(idx[i:min(i + self._batch_size, self._n_examples)])
+            yield self._X_train.take(idx_batch), self.y_train.take(idx_batch)
 
     def fit(self, X_train, y_train):
-        """Fit logist regression.
-
-        Args:
-
-        Returns:
-
-        """
         self._X_train = X_train
         self._y_train = y_train
+        self._n_examples, self._n_inputs = X_train.shape
 
-        # Initialize parameters with zeros.
-        w, b = _initialize_coeffs(self)
+        logreg = self._logreg
+        loss = self._cross_entropy
+        w, b = self._weights_init()
 
-        # Optimize using gradient descent.
-        coeffs, grads, costs = _gradient_descent(self, w, b)
+        for epoch in range(n_epochs):
+            for X, y in self._data_iter():
+                y_hat = self._logreg(X, w, b)
+                loss = self._cross_entropy(y_hat, y)
 
         pass
 
-    # TODO: Continue implementing LogisticRegression class.
+    def get_coeff(self):
+        pass
+
+    def predict(self, X_test):
+        pass
