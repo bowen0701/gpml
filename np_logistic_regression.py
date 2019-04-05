@@ -39,54 +39,6 @@ class LogisticRegression(object):
         for param in [w, b]:
             param[:] = param - self.lr * 
 
-    # def _propagate(self, w, b):
-    #     m = self._n_examples
-        
-    #     # Forward propagation from X to cost.
-    #     # Compute activation.
-    #     A = self._logreg(self._X_train, w, b)
-        
-    #     # Backward propagation to find gradient.
-    #     dw = 1 / m * np.dot(self._X_train, (A - self._y_train).T)
-    #     db = 1 / m * np.sum(A - self._y_train)
-    #     grads = {'dw': dw, 'db': db}
-
-    #     # Compute cost.
-    #     cost = 
-    #     cost = np.squeeze(cost)
-
-    #     return grads, cost
-
-    # def _gradient_descent(self, w, b): 
-    #     costs = []
-
-    #     for i in range(self._num_iterations):
-    #         # Cost and gradient calculation (≈ 1-4 lines of code)
-    #         grads, cost = _propagate(self, w, b)
-            
-    #         # Retrieve derivatives from grads
-    #         dw = grads.get('dw')
-    #         db = grads.get('db')
-            
-    #         # Update rule.
-    #         w -= self._learning_rate * dw
-    #         b -= self._learning_rate * db
-            
-    #         # Record the costs
-    #         if i % 100 == 0:
-    #             costs.append(cost)
-    #         # Print the cost every 100 training examples
-    #         if self._print_cost and i % 100 == 0:
-    #             print("Cost after iteration %i: %f" %(i, cost))
-        
-    #     coeffs = {'w': w,
-    #               'b': b}
-        
-    #     grads = {'dw': dw,
-    #              'db': db}
-        
-    #     return coeffs, grads, costs
-
     def _data_iter(self):
         idx = list(range(self._n_examples))
         random.shuffle(idx)
@@ -107,7 +59,6 @@ class LogisticRegression(object):
             for X, y in self._data_iter():
                 y_hat = self._logreg(X, w, b)
                 loss = self._cross_entropy(y_hat, y)
-
         pass
 
     def get_coeff(self):
