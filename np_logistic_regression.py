@@ -6,9 +6,8 @@ import numpy as np
 
 
 class LogisticRegression(object):
-    """Logistic regression class."""
+    """Numpy implementation of Logistic Regression."""
     def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
-        """Numpy implemenation of Logistic Regression."""
         self._batch_size = batch_size
         self._lr = lr
         self._n_epochs = n_epochs
