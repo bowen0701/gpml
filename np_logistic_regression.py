@@ -33,7 +33,7 @@ class LogisticRegression(object):
         m = X.shape[0]
 
         y_hat = self._logreg(X, w, b) 
-        dw = - np.dot(X.T, y - y_hat) / y.shape[0]
+        dw = - 1 / m * np.matmul(X.T, y - y_hat)
         db = - np.mean(y - y_hat)
         
         for (param, grad) in zip([w, b], [dw, db]):
