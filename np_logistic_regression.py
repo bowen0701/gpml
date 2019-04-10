@@ -15,12 +15,18 @@ class LogisticRegression(object):
         self._n_epochs = n_epochs
 
     def _sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
+        def f(x):
+            if x < 0:
+                return np.exp(x) / (1 + np.exp(x))
+            else:
+                return 1 / (1 + np.exp(-x))
+        return np.array(list(map(f, z)))
 
     def _logreg(self, X, w, b):
         return self._sigmoid(np.dot(X, w) + b)
 
     def _cross_entropy(self, y_hat, y):
+        # TODO: Resolve dividing by zero encountered in log error.
         m = y.shape[0]
         return - np.mean(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
 
