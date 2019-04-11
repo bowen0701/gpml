@@ -53,5 +53,6 @@ def cosine_similarity_d(x_d, y_d):
 
 
 def accuracy(y_true, y_pred):
+    """Accuracy."""
     return (y_true == y_pred).mean()
 
