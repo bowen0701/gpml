@@ -81,4 +81,4 @@ class LogisticRegression(object):
         return self._b, self._w.flatten()
 
     def predict(self, X_test):
-        return self._logreg(X_test, self._w, self._b)
+        return self._logreg(X_test, self._w, self._b).reshape(X_test.shape[0],)
