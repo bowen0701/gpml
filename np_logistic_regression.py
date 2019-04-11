@@ -70,7 +70,8 @@ class LogisticRegression(object):
                 y = y.reshape((y.shape[0], -1))
                 self._sgd(X, y, w, b)
             train_loss = loss(logreg(X, w, b), y)
-            print('epoch {0}: loss {1}'.format(epoch + 1, train_loss))
+            if epoch % 10 == 0:
+                print('epoch {0}: loss {1}'.format(epoch + 1, train_loss))
 
         self._logreg = logreg
         self._w, self._b = w, b
