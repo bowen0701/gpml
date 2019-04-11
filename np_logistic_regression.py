@@ -17,10 +17,8 @@ class LogisticRegression(object):
     def _sigmoid(self, z):
         def f(x):
             if x < 0:
-                # To handle underflow.
                 return np.exp(x) / (1 + np.exp(x))
             else:
-                # To handle overflow.
                 return 1 / (1 + np.exp(-x))
         return np.array(list(map(f, z)))
 

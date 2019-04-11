@@ -59,7 +59,7 @@ class LinearRegression(object):
 
     def get_coeff(self):
         _coef = self.net[0]
-        return _coef.bias.data(), _coef.weight.data()
+        return _coef.bias.data(), _coef.weight.data().reshape((-1,))
 
     def predict(self, X_test):
-        return self.net(X_test)
+        return self.net(X_test).reshape((-1,))

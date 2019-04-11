@@ -66,7 +66,7 @@ class LinearRegression(object):
         return self
 
     def get_coeff(self):
-        return self.b, self.w.flatten()
+        return self.b, self.w.reshape((-1,))
 
     def predict(self, X_test):
         return self.net(X_test, self.w, self.b).reshape(X_test.shape[0],)
