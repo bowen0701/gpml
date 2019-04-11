@@ -89,4 +89,4 @@ class SoftmaxRegression(object):
         return self.b, self.w.flatten()
 
     def predict(self, X_test):
-        return self.net(self.X_test, self.w, self.b)
+        return self.net(X_test, self.w, self.b).reshape(X_test.shape[0],)
