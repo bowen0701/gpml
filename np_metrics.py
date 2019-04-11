@@ -50,3 +50,8 @@ def cosine_similarity_d(x_d, y_d):
     norm2_x = inner_product(x, x)
     norm2_y = inner_product(y, y)
     return inner_prod / math.sqrt(norm2_x * norm2_y)
+
+
+def accuracy(y_true, y_pred):
+    return (y_true == y_pred).mean()
+
