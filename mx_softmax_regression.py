@@ -85,8 +85,8 @@ class SoftmaxRegression(object):
         self.w, self.b = w, b
         return self
 
-    def coef(self):
-        return self.b, self.w
+    def get_coeff(self):
+        return self.b, self.w.flatten()
 
     def predict(self, X_test):
         return self.net(self.X_test, self.w, self.b)
