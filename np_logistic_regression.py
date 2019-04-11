@@ -76,7 +76,7 @@ class LogisticRegression(object):
         return self
 
     def get_coeff(self):
-        return self._b, self._w.flatten()
+        return self._b, self._w.reshape((-1,))
 
     def predict(self, X_test):
-        return self._logreg(X_test, self._w, self._b).reshape(X_test.shape[0],)
+        return self._logreg(X_test, self._w, self._b).reshape((-1,))
