@@ -5,18 +5,24 @@ from __future__ import absolute_import, division, print_function
 import random
 
 
-class SampleDiscreteRV(object):
+class SampleDiscrete(object):
     def __init__(self, values, probs=None, n_bins=1000):
         """Preprocess inputs for sampling from "uniform" duplicated values.
 
-        Note: To sample from uniform discrete r.v.: [x_1, ..., x_n] with probs 1/n:
+        Apply the Probability Integral Transform for uniform discrete r.v.,
+        [x_1, ..., x_n] with probs 1/n:
         X = int(nU) + 1, where U ~ Uniform(0, 1).
 
-        Thus, we can apply the following method to sample discrete r.v.:
+        From the above we can use the following approach to sample discrete r.v.:
         - For r.v. with equal probs, it follows trivially.
         - For r.v. with unequal probs, preprocess to "uniform" r.v. with 1/n.
           Specifically, preprocess [x_1, x_2, ...] with [p_1, p_2, ...] to
           duplicated values [x_1, x_1, ..., x_2, x_2, ...] with frequency based on probs.
+
+        Args:
+          values: A list. Values from which we want to sample.
+          probs: A list. Sampling probabilities for values. Default: None.
+          n_bins: A int. Bin number to duplicate values for uniform r.v. Default: 1000.
         """
         self.n_bins = n_bins
 
@@ -35,6 +41,7 @@ class SampleDiscreteRV(object):
         self.values = binned_values
 
     def sample(self):
+        """Sample from values with probs."""
         # Sample a r.v. from Uniform(0, 1).
         u = random.uniform(0, 1)
 
@@ -52,7 +59,7 @@ def main():
     # Output: should be close to 0.5
     values = [0, 1]
 
-    sample_discrete = SampleDiscreteRV(values)
+    sample_discrete = SampleDiscrete(values)
     sampled_rvs = [None] * n_sim
     for i in range(n_sim):
         sampled_rvs[i] = sample_discrete.sample()
@@ -63,7 +70,7 @@ def main():
     values = [0, 1, 2]
     probs = [0.5, 0.3, 0.2]
 
-    sample_discrete = SampleDiscreteRV(values, probs)
+    sample_discrete = SampleDiscrete(values, probs)
     sampled_rvs = [None] * n_sim
     for i in range(n_sim):
         sampled_rvs[i] = sample_discrete.sample()
