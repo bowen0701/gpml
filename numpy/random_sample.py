@@ -5,19 +5,45 @@ from __future__ import absolute_import, division, print_function
 import random
 
 
-class SampleDiscrete(object):
-    def __init__(self, values, probs=None, n_bins=1000):
-        """Preprocess inputs for sampling from "uniform" duplicated values.
+class SampleUniformDiscrete(object):
+    def __init__(self, values):
+        """Sample from discrete values from uniform prbabilities.
 
         Apply the Probability Integral Transform for uniform discrete r.v.,
-        [x_1, ..., x_n] with probs 1/n:
-        X = int(nU) + 1, where U ~ Uniform(0, 1).
+          [x_1, ..., x_n] with probs 1/n:
+        X = int(n*U) + 1, where U ~ Uniform(0, 1).
+
+        Args:
+          values: A list. Values from which we want to sample.
+        """
+        self.n = len(values)
+        self.values = values
+
+    def sample(self):
+        """Sample from values with probs."""
+        # Sample a r.v. from Uniform(0, 1).
+        u = random.uniform(0, 1)
+
+        # Get index = int(n*u) since index starts from 0.
+        i = int(self.n * u)
+        return self.values[i]
+
+
+class SampleGeneralDiscrete(object):
+    def __init__(self, values, probs, n_bins=1000):
+        """Sampling discrete numbers with general probabilities.
+
+        Preprocess inputs to duplicated numbers with uniform probabilities.
+        Then apply the Probability Integral Transform for uniform discrete r.v.,
+          [x_1, ..., x_n] with probs 1/n:
+        X = int(n*U) + 1, where U ~ Uniform(0, 1).
 
         From the above we can use the following approach to sample discrete r.v.:
-        - For r.v. with equal probs, it follows trivially.
         - For r.v. with unequal probs, preprocess to "uniform" r.v. with 1/n.
           Specifically, preprocess [x_1, x_2, ...] with [p_1, p_2, ...] to
           duplicated values [x_1, x_1, ..., x_2, x_2, ...] with frequency based on probs.
+        - Then sample discrete number from duplicated values with uniform probabilities
+          [1/m, ..., 1/m].
 
         Args:
           values: A list. Values from which we want to sample.
@@ -26,15 +52,9 @@ class SampleDiscrete(object):
         """
         self.n_bins = n_bins
 
-        if not probs:
-            # For values with "equal" probs: 
-            n_vals = len(values)
-            probs = [1 / n_vals] * n_vals
-
-        # Duplicate values by the corresponding binned probs.
-        # E.g. for balanced coin: [0, 1] with [50, 50].
-        binned_probs = [int(round(self.n_bins * p)) for p in probs]
-        binned_values_ls = [[v] * p for v, p in zip(values, binned_probs)]
+        # Duplicate values by the corresponding binned freqs.
+        binned_freqs = [int(round(self.n_bins * p)) for p in probs]
+        binned_values_ls = [[v] * f for v, f in zip(values, binned_freqs)]
         binned_values = [v for ls in binned_values_ls for v in ls]
 
         self.n = len(binned_values)
@@ -58,8 +78,8 @@ def main():
     # Sample discrete random variable with equal probs.
     # Output: should be close to 0.5
     values = [0, 1]
+    sample_discrete = SampleUniformDiscrete(values)
 
-    sample_discrete = SampleDiscrete(values)
     sampled_rvs = [None] * n_sim
     for i in range(n_sim):
         sampled_rvs[i] = sample_discrete.sample()
@@ -69,8 +89,8 @@ def main():
     # Output: should be close to 0.7
     values = [0, 1, 2]
     probs = [0.5, 0.3, 0.2]
+    sample_discrete = SampleGeneralDiscrete(values, probs)
 
-    sample_discrete = SampleDiscrete(values, probs)
     sampled_rvs = [None] * n_sim
     for i in range(n_sim):
         sampled_rvs[i] = sample_discrete.sample()
