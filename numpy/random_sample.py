@@ -33,17 +33,12 @@ class SampleGeneralDiscrete(object):
     def __init__(self, values, probs, n_bins=1000):
         """Sampling discrete numbers with general probabilities.
 
-        Preprocess inputs to duplicated numbers with uniform probabilities.
-        Then apply the Probability Integral Transform for uniform discrete r.v.,
-          [x_1, ..., x_n] with probs 1/n:
-        X = int(n*U) + 1, where U ~ Uniform(0, 1).
-
-        From the above we can use the following approach to sample discrete r.v.:
-        - For r.v. with unequal probs, preprocess to "uniform" r.v. with 1/n.
+        - For r.v.'s with unequal probs, preprocess to "uniform" r.v. with uniform probabilies.
           Specifically, preprocess [x_1, x_2, ...] with [p_1, p_2, ...] to
-          duplicated values [x_1, x_1, ..., x_2, x_2, ...] with frequency based on probs.
-        - Then sample discrete number from duplicated values with uniform probabilities
-          [1/m, ..., 1/m].
+          duplicated values [x_1, x_1, ..., x_2, x_2, ...] with frequencies based on probs.
+        - Then apply the Probability Integral Transform for uniform discrete r.v.'s,
+          [x_1, ..., x_m] with probs 1/m:
+          X = int(m*U) + 1, where U ~ Uniform(0, 1).
 
         Args:
           values: A list. Values from which we want to sample.
