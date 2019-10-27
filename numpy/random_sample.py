@@ -2,7 +2,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import math
 import random
+import itertools
 
 
 class SampleUniformDiscrete(object):
@@ -65,31 +67,79 @@ class SampleGeneralDiscrete(object):
         return self.values[i]
 
 
+class SampleBiasedCoinWithFairCoin(object):
+    def __init__(self, p):
+        """Smple biased coin with p = 1/k by fair coin.
+
+        First compute the number of fair coins we need to flip.
+          n_cases = 1/p
+          n_coins = ceiling(log2(n_cases))
+
+        Note: This function only applies to rational p = 1/k.
+        """
+        if 1 / p != int(1 / p):
+            raise ValueError("p must be an rational number 1 / k.")
+
+        self.n_cases = int(1 / p)
+        self.n_coins = int(math.ceil(math.log(self.n_cases, 2)))
+
+        # Iterate to get the possible list of coin flips.
+        self.possible_flips = list(itertools.product([0, 1], repeat=self.n_coins))
+
+    def sample(self):
+        """Sample biased coin.
+
+        First flip number of coins, if the flipped coins is 
+        - the first case in possible flips, return success;
+        - the (last) n_cases - 1 case, return failures;
+        - the rest cases, retry.
+        """
+        # Convert to tuple due to tuples in itertools's product ouput.
+        flips = tuple([random.randint(0, 1) for _ in  range(self.n_coins)])
+
+        if flips == self.possible_flips[0]:
+            return 1
+        elif flips in set(self.possible_flips[-(self.n_cases-1):]):
+            return 0
+        else:
+            return self.sample()
+
+
 def main():
     import numpy as np
 
     n_sim = 10000
 
     # Sample discrete random variable with equal probs.
-    # Output: should be close to 0.5
     values = [0, 1]
     sample_discrete = SampleUniformDiscrete(values)
 
-    sampled_rvs = [None] * n_sim
+    samples = [None] * n_sim
     for i in range(n_sim):
-        sampled_rvs[i] = sample_discrete.sample()
-    print(np.mean(sampled_rvs))
+        samples[i] = sample_discrete.sample()
+    # Output: should be close to 0.5
+    print(np.mean(samples))
 
     # Sample discrete random variable with unequal probs.
-    # Output: should be close to 0.7
     values = [0, 1, 2]
     probs = [0.5, 0.3, 0.2]
     sample_discrete = SampleGeneralDiscrete(values, probs)
 
-    sampled_rvs = [None] * n_sim
+    samples = [None] * n_sim
     for i in range(n_sim):
-        sampled_rvs[i] = sample_discrete.sample()
-    print(np.mean(sampled_rvs))
+        samples[i] = sample_discrete.sample()
+    # Output: should be close to 0.7
+    print(np.mean(samples))
+
+    # Sample biased coin by fair one.
+    p = 1 / 4
+    sample_biased_coin = SampleBiasedCoinWithFairCoin(p)
+
+    samples = [None] * n_sim
+    for i in range(n_sim):
+        samples[i] = sample_biased_coin.sample()
+    # Output: should be close to 1/4 = 0.25.
+    print(np.mean(samples))
 
 
 if __name__ == '__main__':
