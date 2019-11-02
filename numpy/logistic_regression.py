@@ -25,10 +25,9 @@ class LogisticRegression(object):
     def _logreg(self, X, w, b):
         return self._sigmoid(np.dot(X, w) + b)
 
-    def _cross_entropy(self, y_hat, y):
-        # TODO: Resolve dividing by zero encountered in log error.
-        m = y.shape[0]
-        return - np.mean(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+    def _cross_entropy(self, y_hat, y, eps=1e-7):
+        # To avoid overflow in log, add epsilon = 1E-7.
+        return - np.mean(y * np.log(y_hat + eps) + (1 - y) * np.log(1 - y_hat + eps))
 
     def _weights_init(self):
         w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
