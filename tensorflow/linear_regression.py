@@ -102,11 +102,14 @@ def main():
     # Read California housing data.
     housing = fetch_california_housing()
 
-    # Important: Normalize features.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(housing.data)
+    data = housing.data
     label = housing.target.reshape(-1, 1)
 
+    # Important: Normalize features first.
+    scaler = StandardScaler()
+    data = scaler.fit_transform(data)
+
+    # Split data into training/test datasets.
     test_ratio = 0.2
     test_size = int(data.shape[0] * test_ratio)
 
@@ -115,9 +118,14 @@ def main():
     y_train = label[:-test_size]
     y_test = label[-test_size:]
 
+    # Train Linear Regression model.
     reset_graph()
 
     linreg = LinearRegression()
     linreg.get_dataset(X_train, y_train)
     linreg.build_graph()
     linreg.train_model()
+
+
+if __name__ == '__main__':
+    main()
