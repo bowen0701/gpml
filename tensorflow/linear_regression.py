@@ -50,12 +50,12 @@ class LinearRegression(object):
         self._y_pred = tf.add(tf.matmul(self._X, self._w), self._b, name='y_pred')
     
     def _create_loss(self):
-        # Mean squared error as loss.
+        # Mean squared error loss.
         self._error = self._y_pred - self._y
         self._loss = tf.reduce_mean(tf.square(self._error), name='loss')
     
     def _create_optimizer(self):
-        # Applt gradient descent optimization.
+        # Gradient descent optimization.
         self._optimizer = (
             tf.train.GradientDescentOptimizer(learning_rate=self._learning_rate)
             .minimize(self._loss))
@@ -81,8 +81,9 @@ class LinearRegression(object):
                 total_loss = 0
 
                 for X_train_b, y_train_b in self._fetch_batch():
+                    feed_dict = {self._X: X_train_b, self._y: y_train_b}
                     _, batch_loss = sess.run([self._optimizer, self._loss],
-                                             feed_dict={self._X: X_train_b, self._y: y_train_b})
+                                             feed_dict=feed_dict)
                     total_loss += batch_loss
 
                 if epoch % 100 == 0:
@@ -100,7 +101,6 @@ def main():
 
     # Read California housing data.
     housing = fetch_california_housing()
-
     data = housing.data
     label = housing.target.reshape(-1, 1)
 
