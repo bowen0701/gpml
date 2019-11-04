@@ -82,8 +82,7 @@ class LinearRegression(object):
 
                 for X_train_b, y_train_b in self._fetch_batch():
                     _, batch_loss = sess.run([self._optimizer, self._loss],
-                                             feed_dict={self._X: X_train_b,
-                                                        self._y: y_train_b})
+                                             feed_dict={self._X: X_train_b, self._y: y_train_b})
                     total_loss += batch_loss
 
                 if epoch % 100 == 0:
