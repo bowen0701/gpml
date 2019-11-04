@@ -90,7 +90,7 @@ class LinearRegression(object):
                           .format(epoch, total_loss / self._n_examples))
 
             w_out, b_out = sess.run([self._w, self._b])
-            print('Weight: {}'.format(w_out))
+            print('Weight:\n{}'.format(w_out))
             print('Bias: {}'.format(b_out))
 
 
