@@ -2,7 +2,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import random
+import numpy as np
 import tensorflow as tf
+
+
+# Reset default graph.
+def reset_graph(seed=71):
+    tf.reset_default_graph()
+    tf.set_random_seed(seed)
+    np.random.seed(seed)
 
 
 class LinearRegression(object):
@@ -84,3 +93,31 @@ class LinearRegression(object):
             w_out, b_out = sess.run([self._w, self._b])
             print('Weight: {}'.format(w_out))
             print('Bias: {}'.format(b_out))
+
+
+def main():
+    from sklearn.datasets import fetch_california_housing
+    from sklearn.preprocessing import StandardScaler
+
+    # Read California housing data.
+    housing = fetch_california_housing()
+
+    # Important: Normalize features.
+    scaler = StandardScaler()
+    data = scaler.fit_transform(housing.data)
+    label = housing.target.reshape(-1, 1)
+
+    test_ratio = 0.2
+    test_size = int(data.shape[0] * test_ratio)
+
+    X_train = data[:-test_size]
+    X_test = data[-test_size:]
+    y_train = label[:-test_size]
+    y_test = label[-test_size:]
+
+    reset_graph()
+
+    linreg = LinearRegression()
+    linreg.get_dataset(X_train, y_train)
+    linreg.build_graph()
+    linreg.train_model()
