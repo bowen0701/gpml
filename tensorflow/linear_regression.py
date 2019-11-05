@@ -36,8 +36,8 @@ class LinearRegression(object):
         self._y_train = self._y_train[idx]
     
     def _create_placeholders(self):
-        self._X = tf.placeholder(tf.float32, shape=(self._batch_size, self._n_inputs), name='X')
-        self._y = tf.placeholder(tf.float32, shape=(self._batch_size, 1), name='y')
+        self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
+        self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
         self._w = tf.get_variable(shape=(self._n_inputs, 1), 
