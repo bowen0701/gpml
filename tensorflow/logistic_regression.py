@@ -36,8 +36,8 @@ class LogisticRegression(object):
         self._y_train = self._y_train[idx]
     
     def _create_placeholders(self):
-        self._X = tf.placeholder(tf.float32, shape=(self._batch_size, self._n_inputs), name='X')
-        self._y = tf.placeholder(tf.float32, shape=(self._batch_size, 1), name='y')
+        self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
+        self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
         self._w = tf.get_variable(shape=(self._n_inputs, 1), 
@@ -47,14 +47,17 @@ class LogisticRegression(object):
                                   initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
-        # TODO: Logistic regression model.
-        # self._y_pred = tf.add(tf.matmul(self._X, self._w), self._b, name='y_pred')
-    
+        # Logistic regression model's logit.
+        self._logit = tf.add(tf.matmul(self._X, self._w), self._b, name='logit')
+
     def _create_loss(self):
-        # TODO: Cross entropy.
-        # self._error = self._y_pred - self._y
-        # self._loss = tf.reduce_mean(tf.square(self._error), name='loss')
-    
+        # Cross entropy loss.
+        self._cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
+            labels=self._y,
+            logits=self._logit,
+            name='y_pred')   
+        self._loss = tf.reduce_mean(self._cross_entropy, name='loss')
+
     def _create_optimizer(self):
         # Gradient descent optimization.
         self._optimizer = (
@@ -97,19 +100,18 @@ class LogisticRegression(object):
 
 
 def main():
-    # from sklearn.datasets import fetch_california_housing
+    from sklearn.datasets import load_breast_cancer
     from sklearn.preprocessing import StandardScaler
 
-    # TODO: Read ??? data.
-    # housing = fetch_california_housing()
-    # data = housing.data
-    # label = housing.target.reshape(-1, 1)
+    breast_cancer = load_breast_cancer()
+    data = breast_cancer.data
+    label = breast_cancer.target.reshape(-1, 1)
 
     # Important: Normalize features first.
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
 
-    # Split data into training/test datasets.
+    # Split data into training/test data.
     test_ratio = 0.2
     test_size = int(data.shape[0] * test_ratio)
 
