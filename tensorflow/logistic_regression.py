@@ -47,8 +47,9 @@ class LogisticRegression(object):
                                   initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
-        # Logistic regression model's logit.
+        # Logistic regression model.
         self._logit = tf.add(tf.matmul(self._X, self._w), self._b, name='logit')
+        self._logreg = tf.math.sigmoid(self._logit, name='logreg')
 
     def _create_loss(self):
         # Cross entropy loss.
