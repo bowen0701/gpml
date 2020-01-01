@@ -75,7 +75,7 @@ class SampleBiasedCoinWithFairCoin(object):
 
         First compute the number of fair coins we need to flip.
           n_cases = 1/p
-          n_coins = ceiling(log2(n_cases))
+          2^n_coins = n_cases => n_coins = ceiling(log2(n_cases))
 
         Note: This function only applies to rational p = 1/k.
         """
@@ -85,7 +85,7 @@ class SampleBiasedCoinWithFairCoin(object):
         self.n_cases = int(1 / p)
         self.n_coins = int(math.ceil(math.log(self.n_cases, 2)))
 
-        # Iterate to get the possible list of coin flips.
+        # Iterate the possible results of flipping coins.
         self.possible_flips = list(itertools.product([0, 1], repeat=self.n_coins))
 
     def sample(self):
@@ -99,6 +99,7 @@ class SampleBiasedCoinWithFairCoin(object):
         # Convert to tuple due to tuples in itertools's product ouput.
         flips = tuple([random.randint(0, 1) for _ in range(self.n_coins)])
 
+        # Use only the 1st case and the last (n_cases - 1) as sampling basis.
         if flips == self.possible_flips[0]:
             return 1
         elif flips in set(self.possible_flips[-(self.n_cases-1):]):
@@ -129,7 +130,10 @@ class SampleFairCoinWithBiasedCoin(object):
         Thus we obtain "fair" probibilities for these two cases.
         For the rest cases, retry.
         """
+        # Flip two biased coins.
         two_flips = [self._sample_biased() for _ in range(2)]
+
+        # Use cases (1, 0) and (0, 1) for fair coin flipping.
         if two_flips == [1, 0]:
             return 1
         elif two_flips == [0, 1]:
