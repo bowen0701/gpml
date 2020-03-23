@@ -147,21 +147,18 @@ def main():
 
     n_sim = 10000
 
-    # ---
     # Sample discrete random variable with equal probs.
-    # ---
+    # Output: should be close to 0.5
     values = [0, 1]
     sample_discrete = SampleUniformDiscrete(values)
 
     samples = [None] * n_sim
     for i in range(n_sim):
         samples[i] = sample_discrete.sample()
-    # Output: should be close to 0.5
     print(np.mean(samples))
 
-    # ---
     # Sample discrete random variable with unequal probs.
-    # ---
+    # Output: should be close to 0.7
     values = [0, 1, 2]
     probs = [0.5, 0.3, 0.2]
     sample_discrete = SampleGeneralDiscrete(values, probs)
@@ -169,31 +166,26 @@ def main():
     samples = [None] * n_sim
     for i in range(n_sim):
         samples[i] = sample_discrete.sample()
-    # Output: should be close to 0.7
     print(np.mean(samples))
 
-    # ---
     # Sample biased coin with fair one.
-    # ---
+    # Output: should be close to 1/4 = 0.25.
     p = 1 / 4
     sample_biased_coin = SampleBiasedCoinWithFairCoin(p)
 
     samples = [None] * n_sim
     for i in range(n_sim):
         samples[i] = sample_biased_coin.sample()
-    # Output: should be close to 1/4 = 0.25.
     print(np.mean(samples))
 
-    # ---
     # Sample fair coin with biased one.
-    # ---
+    # Output: should be close to 0.5.
     p = 1 / 4
     sample_fair_coin = SampleFairCoinWithBiasedCoin(p)
 
     samples = [None] * n_sim
     for i in range(n_sim):
         samples[i] = sample_fair_coin.sample()
-    # Output: should be close to 0.5.
     print(np.mean(samples))
 
 
