@@ -75,7 +75,7 @@ class Tensor(object):
         """Matrix multiplication: self & other."""
         return _matmul(self, as_tensor(other))
 
-    # TODO: Continue implement autograd.
+    # TODO: Continue implementing autograd.
 
 
 def main():
