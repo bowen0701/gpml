@@ -6,7 +6,7 @@ from mxnet import nd, autograd
 import random
 
 
-class SoftmaxRegression(object):
+class SoftmaxRegressionMX(object):
     """MXNet implementation of Softmax Regression."""
     def __init__(self, batch_size=256, lr=0.01, n_epoches=5):
         self.batch_size = batch_size
@@ -90,3 +90,6 @@ class SoftmaxRegression(object):
 
     def predict(self, X_test):
         return self.net(X_test, self.w, self.b).reshape((-1,))
+
+
+# TODO: Implement main() with tests.
