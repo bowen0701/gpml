@@ -1,3 +1,3 @@
 # Machine Learning 
 
-This repo is to collect my machine learning notebooks and implementations in Python.
+This repo is to collect my notebooks on machine learning models with Python implementation.
