@@ -7,33 +7,54 @@ import numpy as np
 
 import tensorflow as tf
 
+np.random.seed(71)
+
 
 class LogisticRegression(object):
     """Numpy implementation of Logistic Regression."""
-    def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
+    def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         self._batch_size = batch_size
         self._lr = lr
         self._n_epochs = n_epochs
 
-    def _sigmoid(self, z):
-        def f(x):
-            if x < 0:
-                return np.exp(x) / (1 + np.exp(x))
-            else:
-                return 1 / (1 + np.exp(-x))
-        return np.array(list(map(f, z)))
+    def get_dataset(self, X_train, y_train, shuffle=True):
+        self._X_train = X_train
+        self._y_train = y_train
 
-    def _logreg(self, X, w, b):
-        return self._sigmoid(np.dot(X, w) + b)
+        # Get the numbers of examples and inputs.
+        self._n_examples = self._X_train.shape[0]
+        self._n_inputs = self._X_train.shape[1]
+
+        idx = list(range(self._n_examples))
+        if shuffle:
+            random.shuffle(idx)
+        self._X_train = self._X_train[idx]
+        self._y_train = self._y_train[idx]
+
+    def _create_weights(self):
+        self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
+        self._b = np.zeros(1).reshape(1, 1)
+
+    def _sigmoid(self, z):
+        z_stable = z - z.max()
+        return z_stable / np.sum(z_stable)
+
+    def _create_model(self):
+        # Logistic regression model.
+        self._logit = np.dot(self._X, self._w) + self._b
+        self._logreg = self._sigmoid(self._logit)
+
+    # def _create_loss(self):
+    #     # Cross entropy loss.
+    #     self._cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
+    #         labels=self._y,
+    #         logits=self._logit,
+    #         name='y_pred')
+    #     self._loss = tf.reduce_mean(self._cross_entropy, name='loss')
 
     def _cross_entropy(self, y_hat, y, eps=1e-7):
         # To avoid overflow in log, add epsilon = 1E-7.
-        return - np.mean(y * np.log(y_hat + eps) + (1 - y) * np.log(1 - y_hat + eps))
-
-    def _weights_init(self):
-        w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
-        b = np.zeros(1).reshape(1, 1)
-        return w, b
+        return -np.mean(y * np.log(y_hat + eps) + (1 - y) * np.log(1 - y_hat + eps))
 
     def _sgd(self, X, y, w, b):
         m = X.shape[0]
