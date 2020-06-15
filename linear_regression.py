@@ -232,7 +232,7 @@ def main():
     data = housing.data
     label = housing.target.reshape(-1, 1)
 
-    # Important: Normalize features first.
+    # Normalize features first.
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
 

@@ -183,7 +183,7 @@ def main():
     data = breast_cancer.data
     label = breast_cancer.target.reshape(-1, 1)
 
-    # Important: Normalize features first.
+    # Normalize features first.
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
 
