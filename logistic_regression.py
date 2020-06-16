@@ -174,18 +174,17 @@ class LogisticRegressionTF(object):
             idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
             yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
 
-    def train_model(self):
+    def fit(self):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
             for epoch in range(self._n_epochs):
                 total_loss = 0
-
                 for X_train_b, y_train_b in self._fetch_batch():
                     feed_dict = {self._X: X_train_b, self._y: y_train_b}
                     _, batch_loss = sess.run([self._optimizer, self._loss],
                                              feed_dict=feed_dict)
-                    total_loss += batch_loss
+                    total_loss += batch_loss * X_train_b.shape[0]
 
                 if epoch % 100 == 0:
                     print('Epoch {0}: training loss: {1}'
@@ -225,7 +224,7 @@ def main():
     logreg = LogisticRegressionTF()
     logreg.get_dataset(X_train, y_train)
     logreg.build_graph()
-    logreg.train_model()
+    logreg.fit()
 
 
 if __name__ == '__main__':
