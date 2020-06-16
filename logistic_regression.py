@@ -18,6 +18,7 @@ class LogisticRegression(object):
         self._n_epochs = n_epochs
 
     def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get and shuffule dataset."""
         self._X_train = X_train
         self._y_train = y_train
 
@@ -25,82 +26,79 @@ class LogisticRegression(object):
         self._n_examples = self._X_train.shape[0]
         self._n_inputs = self._X_train.shape[1]
 
-        idx = list(range(self._n_examples))
         if shuffle:
+            idx = list(range(self._n_examples))
             random.shuffle(idx)
-        self._X_train = self._X_train[idx]
-        self._y_train = self._y_train[idx]
+            self._X_train = self._X_train[idx]
+            self._y_train = self._y_train[idx]
 
     def _create_weights(self):
+        """Create model weights and bias."""
         self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
         self._b = np.zeros(1).reshape(1, 1)
 
-    def _sigmoid(self, z):
-        z_stable = z - z.max()
-        return z_stable / np.sum(z_stable)
+    def _sigmoid(self, logit):
+        """Sigmoid function (stable version) by subtracting the maximum of (0, logit)."""
+        logit_max = np.maximum(0, logit)
+        logit_stable = logit - logit_max
+        return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
 
-    def _create_model(self):
-        # Logistic regression model.
-        self._logit = np.dot(self._X, self._w) + self._b
-        self._logreg = self._sigmoid(self._logit)
+    def _logit(self, X):
+        return np.matmul(X, self._w) + self._b
+    
+    def _model(self, X):
+        """Logistic regression model (stable version)."""
+        logit = self._logit(X)
+        return self._sigmoid(logit)
 
-    # def _create_loss(self):
-    #     # Cross entropy loss.
-    #     self._cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
-    #         labels=self._y,
-    #         logits=self._logit,
-    #         name='y_pred')
-    #     self._loss = tf.reduce_mean(self._cross_entropy, name='loss')
+    def _loss(self, y, logit):
+        """Cross entropy loss (stable version) by subtracting the maximum of (0, logit)."""
+        logit_max = np.maximum(0, logit)
+        logit_stable = logit - logit_max
+        logsumexp_stable = logit_max + np.log(np.exp(-logit_max) + np.exp(logit_stable))
+        self._cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
+        self._loss = np.mean(self._cross_entropy)
 
-    def _cross_entropy(self, y_hat, y, eps=1e-7):
-        # To avoid overflow in log, add epsilon = 1E-7.
-        return -np.mean(y * np.log(y_hat + eps) + (1 - y) * np.log(1 - y_hat + eps))
-
-    def _sgd(self, X, y, w, b):
+    def _optimizer(self, X, y):
+        """Optimize by stochastic gradient descent."""
         m = X.shape[0]
 
-        y_hat = self._logreg(X, w, b) 
-        dw = - 1 / m * np.matmul(X.T, y - y_hat)
-        db = - np.mean(y - y_hat)
+        y_hat = self._model(X, w, b) 
+        dw = -1 / m * np.matmul(X.T, y - y_hat)
+        db = -np.mean(y - y_hat)
         
-        for (param, grad) in zip([w, b], [dw, db]):
+        for (param, grad) in zip([self._w, self._b], [dw, db]):
             param[:] = param - self._lr * grad
 
-    def _data_iter(self):
+    def build_graph(self):
+        self._create_weights()
+            
+    def _fetch_batch(self):
         idx = list(range(self._n_examples))
-        random.shuffle(idx)
         for i in range(0, self._n_examples, self._batch_size):
-            idx_batch = np.array(
-                idx[i:min(i + self._batch_size, self._n_examples)])
-            yield (self._X_train.take(idx_batch, axis=0), 
-                   self._y_train.take(idx_batch, axis=0))
+            idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
+            # yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
+            yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
 
-    def fit(self, X_train, y_train):
-        self._X_train = X_train
-        self._y_train = y_train
-        self._n_examples, self._n_inputs = X_train.shape
-
-        logreg = self._logreg
-        loss = self._cross_entropy
-        w, b = self._weights_init()
-
+    def fit(self):
         for epoch in range(self._n_epochs):
-            for step, (X, y) in enumerate(self._data_iter()):
-                y = y.reshape((y.shape[0], -1))
-                self._sgd(X, y, w, b)
-            train_loss = loss(logreg(X, w, b), y)
-            if epoch % 10 == 0:
-                print('epoch {0}: loss {1}'.format(epoch + 1, train_loss))
+            total_loss = 0
+            for X_train_b, y_train_b in self._fetch_batch():
+                y_train_b = y_train_b.reshape((y.shape[0], -1))
+                self._optimizer(X_train_b, y_train_b)
+                train_loss = self._loss(y_train_b, self._logit(X_train_b))
+                total_loss += train_loss * X_train_b.shape[0]
 
-        self._logreg = logreg
-        self._w, self._b = w, b
+            if epoch % 100 == 0:
+                print('epoch {0}: training loss {1}'.format(epoch, total_loss))
+
         return self
 
     def get_coeff(self):
         return self._b, self._w.reshape((-1,))
 
     def predict(self, X_test):
-        return self._logreg(X_test, self._w, self._b).reshape((-1,))
+        return _model(X_test).reshape((-1,))
 
 
 # Reset default graph.
