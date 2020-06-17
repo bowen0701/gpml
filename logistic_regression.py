@@ -18,7 +18,7 @@ class LogisticRegression(object):
         self._n_epochs = n_epochs
 
     def get_dataset(self, X_train, y_train, shuffle=True):
-        """Get and shuffule dataset."""
+        """Get dataset information."""
         self._X_train = X_train
         self._y_train = y_train
 
@@ -38,7 +38,7 @@ class LogisticRegression(object):
         self._b = np.zeros(1).reshape(1, 1)
 
     def _sigmoid(self, logit):
-        """Sigmoid function (stable version) by subtracting the maximum of (0, logit)."""
+        """Sigmoid function (stable version)."""
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
         return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
@@ -57,13 +57,13 @@ class LogisticRegression(object):
         logit_stable = logit - logit_max
         logsumexp_stable = logit_max + np.log(np.exp(-logit_max) + np.exp(logit_stable))
         self._cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
-        self._loss = np.mean(self._cross_entropy)
+        return np.mean(self._cross_entropy)
 
     def _optimizer(self, X, y):
         """Optimize by stochastic gradient descent."""
         m = X.shape[0]
 
-        y_hat = self._model(X, w, b) 
+        y_hat = self._model(X) 
         dw = -1 / m * np.matmul(X.T, y - y_hat)
         db = -np.mean(y - y_hat)
         
@@ -77,14 +77,13 @@ class LogisticRegression(object):
         idx = list(range(self._n_examples))
         for i in range(0, self._n_examples, self._batch_size):
             idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
-            # yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
-            yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
+            yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
 
     def fit(self):
         for epoch in range(self._n_epochs):
             total_loss = 0
             for X_train_b, y_train_b in self._fetch_batch():
-                y_train_b = y_train_b.reshape((y.shape[0], -1))
+                y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
                 self._optimizer(X_train_b, y_train_b)
                 train_loss = self._loss(y_train_b, self._logit(X_train_b))
                 total_loss += train_loss * X_train_b.shape[0]
@@ -98,7 +97,7 @@ class LogisticRegression(object):
         return self._b, self._w.reshape((-1,))
 
     def predict(self, X_test):
-        return _model(X_test).reshape((-1,))
+        return self._model(X_test).reshape((-1,))
 
 
 # Reset default graph.
