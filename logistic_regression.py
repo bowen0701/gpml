@@ -38,7 +38,13 @@ class LogisticRegression(object):
         self._b = np.zeros(1).reshape(1, 1)
 
     def _sigmoid(self, logit):
-        """Sigmoid function (stable version)."""
+        """Sigmoid function (stable version).
+
+        sigmoid(z) = 1 / (1 + exp(-z)) 
+                   = exp(z) / (1 + exp(z)) 
+                   = exp(z - z_max) / (exp(-z_max) + exp(z - z_max)),
+        where z is the logit, and z_max is z - max(0, z).
+        """
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
         return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
@@ -52,14 +58,23 @@ class LogisticRegression(object):
         return self._sigmoid(logit)
 
     def _loss(self, y, logit):
-        """Cross entropy loss (stable version) by subtracting the maximum of (0, logit)."""
+        """Cross entropy loss (stable version).
+
+        cross_entropy_loss(y, z) 
+          = - 1/n * \sum_{i=1}^n y_i * p(y_i = 1|x_i) + (1 - y_i) * p(y_i = 0|x_i)
+          = - 1/n * \sum_{i=1}^n y_i * (z_i - log(1 + exp(z_i))) + (1 - y_i) * (-log(1 + exp(z_i))),
+        where z is the logit, z_max is z - max(0, z), and log(1 + exp(z)) is the 
+          logsumexp(z) = log(exp(0) + exp(z))
+                       = log((exp(0) + exp(z)) * exp(z_max) / exp(z_max))
+                       = z_max + log(exp(-z_max) + exp(z - z_max)).
+        """
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
         logsumexp_stable = logit_max + np.log(np.exp(-logit_max) + np.exp(logit_stable))
         self._cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
         return np.mean(self._cross_entropy)
 
-    def _optimizer(self, X, y):
+    def _optimize(self, X, y):
         """Optimize by stochastic gradient descent."""
         m = X.shape[0]
 
@@ -69,22 +84,22 @@ class LogisticRegression(object):
         
         for (param, grad) in zip([self._w, self._b], [dw, db]):
             param[:] = param - self._lr * grad
-
-    def build_graph(self):
-        self._create_weights()
             
     def _fetch_batch(self):
+        """Fetch batch dataset."""
         idx = list(range(self._n_examples))
         for i in range(0, self._n_examples, self._batch_size):
             idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
             yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
 
     def fit(self):
+        self._create_weights()
+
         for epoch in range(self._n_epochs):
             total_loss = 0
             for X_train_b, y_train_b in self._fetch_batch():
                 y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
-                self._optimizer(X_train_b, y_train_b)
+                self._optimize(X_train_b, y_train_b)
                 train_loss = self._loss(y_train_b, self._logit(X_train_b))
                 total_loss += train_loss * X_train_b.shape[0]
 
