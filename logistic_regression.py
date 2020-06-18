@@ -38,7 +38,7 @@ class LogisticRegression(object):
         self._b = np.zeros(1).reshape(1, 1)
 
     def _sigmoid(self, logit):
-        """Sigmoid function (stable version).
+        """Sigmoid function by stabilization trick.
 
         sigmoid(z) = 1 / (1 + exp(-z)) 
                    = exp(z) / (1 + exp(z)) 
@@ -53,12 +53,12 @@ class LogisticRegression(object):
         return np.matmul(X, self._w) + self._b
     
     def _model(self, X):
-        """Logistic regression model (stable version)."""
+        """Logistic regression model."""
         logit = self._logit(X)
         return self._sigmoid(logit)
 
     def _loss(self, y, logit):
-        """Cross entropy loss (stable version).
+        """Cross entropy loss by stabilizaiton trick.
 
         cross_entropy_loss(y, z) 
           = - 1/n * \sum_{i=1}^n y_i * p(y_i = 1|x_i) + (1 - y_i) * p(y_i = 0|x_i)
