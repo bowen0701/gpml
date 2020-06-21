@@ -234,7 +234,7 @@ def main():
     p_pred_train = logreg.predict(X_train)
     y_pred_train = (p_pred_train > 0.5) * 1
     accuracy(y_train, y_pred_train)
-    p_pred_test = clf.predict(X_test)
+    p_pred_test = logreg.predict(X_test)
     y_pred_test = (p_pred_test > 0.5) * 1
     accuracy(y_test, y_pred_test)
 
@@ -248,7 +248,7 @@ def main():
     p_pred_train = logreg_tf.predict(X_train)
     y_pred_train = (p_pred_train > 0.5) * 1
     accuracy(y_train, y_pred_train)
-    p_pred_test = clf.predict(X_test)
+    p_pred_test = logreg_tf.predict(X_test)
     y_pred_test = (p_pred_test > 0.5) * 1
     accuracy(y_test, y_pred_test)
 
