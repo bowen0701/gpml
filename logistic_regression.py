@@ -202,14 +202,12 @@ class LogisticRegressionTF(object):
                     print('Epoch {0}: training loss: {1}'
                           .format(epoch, total_loss / self._n_examples))
 
-            w_out, b_out = sess.run([self._w, self._b])
-            print('Weight:\n{}'.format(w_out))
-            print('Bias: {}'.format(b_out))
-
 
 def main():
     from sklearn.datasets import load_breast_cancer
     from sklearn.preprocessing import StandardScaler
+
+    from metrics import accuracy
 
     breast_cancer = load_breast_cancer()
     data = breast_cancer.data
@@ -228,15 +226,31 @@ def main():
     y_train = label[:-test_size]
     y_test = label[-test_size:]
 
-    # TODO: Train Numpy linear regression model.
+    # Train Numpy linear regression model.
+    logreg = LogisticRegression(batch_size=64, lr=1, n_epochs=1000)
+    logreg.get_dataset(X_train, y_train, shuffle=True)
+    logreg.fit()
+
+    p_pred_train = logreg.predict(X_train)
+    y_pred_train = (p_pred_train > 0.5) * 1
+    accuracy(y_train, y_pred_train)
+    p_pred_test = clf.predict(X_test)
+    y_pred_test = (p_pred_test > 0.5) * 1
+    accuracy(y_test, y_pred_test)
 
     # Train TensorFlow logistic regression model.
     reset_tf_graph()
+    logreg_tf = LogisticRegressionTF()
+    logreg_tf.get_dataset(X_train, y_train)
+    logreg_tf.build_graph()
+    logreg_tf.fit()
 
-    logreg = LogisticRegressionTF()
-    logreg.get_dataset(X_train, y_train)
-    logreg.build_graph()
-    logreg.fit()
+    p_pred_train = logreg_tf.predict(X_train)
+    y_pred_train = (p_pred_train > 0.5) * 1
+    accuracy(y_train, y_pred_train)
+    p_pred_test = clf.predict(X_test)
+    y_pred_test = (p_pred_test > 0.5) * 1
+    accuracy(y_test, y_pred_test)
 
 
 if __name__ == '__main__':
