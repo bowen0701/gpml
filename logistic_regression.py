@@ -18,7 +18,7 @@ class LogisticRegression(object):
         self._n_epochs = n_epochs
 
     def get_dataset(self, X_train, y_train, shuffle=True):
-        """Get dataset information."""
+        """Get dataset and information."""
         self._X_train = X_train
         self._y_train = y_train
 
@@ -50,6 +50,7 @@ class LogisticRegression(object):
         return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
 
     def _logit(self, X):
+        """Logit: unnormalized log probability."""
         return np.matmul(X, self._w) + self._b
     
     def _model(self, X):
@@ -93,6 +94,7 @@ class LogisticRegression(object):
             yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
 
     def fit(self):
+        """Fit model."""
         self._create_weights()
 
         for epoch in range(self._n_epochs):
@@ -130,6 +132,7 @@ class LogisticRegressionTF(object):
         self._learning_rate = learning_rate
 
     def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get dataset and information."""
         self._X_train = X_train
         self._y_train = y_train
 
@@ -144,10 +147,12 @@ class LogisticRegressionTF(object):
         self._y_train = self._y_train[idx]
     
     def _create_placeholders(self):
+        """Create placeholder for features and labels."""
         self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
         self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
+        """Create and initialize model weights and bias."""
         self._w = tf.get_variable(shape=(self._n_inputs, 1), 
                                   initializer=tf.random_normal_initializer(0, 0.01), 
                                   name='weights')
@@ -155,12 +160,12 @@ class LogisticRegressionTF(object):
                                   initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
-        # Logistic regression model.
+        # Create logistic regression model.
         self._logit = tf.add(tf.matmul(self._X, self._w), self._b, name='logit')
         self._logreg = tf.math.sigmoid(self._logit, name='logreg')
 
     def _create_loss(self):
-        # Cross entropy loss.
+        # Create cross entropy loss.
         self._cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
             labels=self._y,
             logits=self._logit,
@@ -168,12 +173,13 @@ class LogisticRegressionTF(object):
         self._loss = tf.reduce_mean(self._cross_entropy, name='loss')
 
     def _create_optimizer(self):
-        # Gradient descent optimization.
+        # Create gradient descent optimization.
         self._optimizer = (
             tf.train.GradientDescentOptimizer(learning_rate=self._learning_rate)
             .minimize(self._loss))
 
     def build_graph(self):
+        """Build computational graph."""
         self._create_placeholders()
         self._create_weights()
         self._create_model()
@@ -181,12 +187,14 @@ class LogisticRegressionTF(object):
         self._create_optimizer()
 
     def _fetch_batch(self):
+        """Fetch batch dataset.s"""
         idx = list(range(self._n_examples))
         for i in range(0, self._n_examples, self._batch_size):
             idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
             yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
 
     def fit(self):
+        """Fit model."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
