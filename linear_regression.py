@@ -57,6 +57,7 @@ class LinearRegressionTF(object):
         self._learning_rate = learning_rate
 
     def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get dataset and information.s"""
         self._X_train = X_train
         self._y_train = y_train
 
@@ -71,10 +72,12 @@ class LinearRegressionTF(object):
         self._y_train = self._y_train[idx]
     
     def _create_placeholders(self):
+        """Create placeholder for features and response."""
         self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
         self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
+        """Create and initialize model weights and bias."""
         self._w = tf.get_variable(shape=(self._n_inputs, 1), 
                                   initializer=tf.random_normal_initializer(0, 0.01), 
                                   name='weights')
@@ -82,20 +85,22 @@ class LinearRegressionTF(object):
                                   initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
+        """Create linear model."""
         self._y_pred = tf.add(tf.matmul(self._X, self._w), self._b, name='y_pred')
     
     def _create_loss(self):
-        # Mean squared error loss.
+        # Create mean squared error loss.
         self._error = self._y_pred - self._y
         self._loss = tf.reduce_mean(tf.square(self._error), name='loss')
     
     def _create_optimizer(self):
-        # Gradient descent optimization.
+        # Create gradient descent optimization.
         self._optimizer = (
             tf.train.GradientDescentOptimizer(learning_rate=self._learning_rate)
             .minimize(self._loss))
 
     def build_graph(self):
+        """Build computational graph."""
         self._create_placeholders()
         self._create_weights()
         self._create_model()
@@ -103,12 +108,14 @@ class LinearRegressionTF(object):
         self._create_optimizer()
 
     def _fetch_batch(self):
+        """Fetch batch dataset."""
         idx = list(range(self._n_examples))
         for i in range(0, self._n_examples, self._batch_size):
             idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
             yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
 
-    def train_model(self):
+    def fit(self):
+        """Fit model."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
@@ -125,10 +132,6 @@ class LinearRegressionTF(object):
                     print('Epoch {0}: training loss: {1}'
                           .format(epoch, total_loss / self._n_examples))
 
-            w_out, b_out = sess.run([self._w, self._b])
-            print('Weight:\n{}'.format(w_out))
-            print('Bias: {}'.format(b_out))
-
 
 class LinearRegressionMX(object):
     """MXNet implementation of Linear Regression."""
@@ -138,12 +141,15 @@ class LinearRegressionMX(object):
         self.n_epochs = n_epochs
     
     def _linreg(self, X, w, b):
+        """Linear model."""
         return nd.dot(X, w) + b
     
     def _squared_loss(self, y_hat, y):
+        """Squared loss."""
         return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
 
-    def _weights_init(self):
+    def _create_weights(self):
+        """Create and initialize model weights and bias and attach gradients."""
         w = nd.random.normal(scale=0.01, shape=(self.n_inputs, 1))
         b = nd.zeros(shape=(1,))
         params = [w, b]
@@ -153,11 +159,12 @@ class LinearRegressionMX(object):
         return params
     
     def _sgd(self, w, d):
+        """Apply stochastic gradient descent."""
         for param in [w, d]:
             # Take parameter's gradient from auto diff output.
             param[:] = param - self.lr * param.grad / self.batch_size
 
-    def _data_iter(self):
+    def _fetch_batch(self):
         idx = list(range(self.n_examples))
         random.shuffle(idx)
         for i in range(0, self.n_examples, self.batch_size):
@@ -171,7 +178,7 @@ class LinearRegressionMX(object):
 
         net = self._linreg
         loss = self._squared_loss
-        w, b = self._weights_init()
+        w, b = self._create_weights()
 
         for epoch in range(self.n_epochs):
             for X, y in self._data_iter():
@@ -204,21 +211,25 @@ class LinearRegressionMXGluon(object):
         self.n_epochs = n_epochs
 
     def _linreg(self):
+        """Linear model."""
         net = nn.Sequential()
         net.add(nn.Dense(1))
         return net
 
     def _squared_loss(self):
+        """Squared loss."""
         return gloss.L2Loss()
 
-    def _weights_init(self, net):
+    def _create_weights(self, net):
+        """Create and initialize model weights and bias."""
         net.initialize(init.Normal(sigma=0.01))
 
     def _sgd_trainer(self, net):
+        """Stochastic gradient descent trainer."""
         return gluon.Trainer(
             net.collect_params(), 'sgd', {'learning_rate': self.lr})
 
-    def _data_iter(self):
+    def _fetch_batch(self):
         dataset = gdata.ArrayDataset(self.X_train, self.y_train)
         return gdata.DataLoader(dataset, self.batch_size, shuffle=True)
 
@@ -228,11 +239,11 @@ class LinearRegressionMXGluon(object):
 
         net = self._linreg()
         loss = self._squared_loss()
-        self._weights_init(net)
+        self._create_weights(net)
         trainer = self._sgd_trainer(net)
 
         for epoch in list(range(self.n_epochs)):
-            for X, y in self._data_iter():
+            for X, y in self._fetch_batch():
                 with autograd.record():
                     l = loss(net(X), y)
                 l.backward()
@@ -282,7 +293,7 @@ def main():
     linreg = LinearRegressionTF()
     linreg.get_dataset(X_train, y_train)
     linreg.build_graph()
-    linreg.train_model()
+    linreg.fit()
 
     # TODO: Train MXNet linear regression model.
 
