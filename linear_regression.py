@@ -19,6 +19,36 @@ def reset_tf_graph(seed=71):
     np.random.seed(seed)
 
 
+class LinearsRegression(object):
+    """Numpy implementation of Logistic Regression."""
+    def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
+        self._batch_size = batch_size
+        self._lr = lr
+        self._n_epochs = n_epochs
+
+    def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get dataset and information."""
+        self._X_train = X_train
+        self._y_train = y_train
+
+        # Get the numbers of examples and inputs.
+        self._n_examples = self._X_train.shape[0]
+        self._n_inputs = self._X_train.shape[1]
+
+        if shuffle:
+            idx = list(range(self._n_examples))
+            random.shuffle(idx)
+            self._X_train = self._X_train[idx]
+            self._y_train = self._y_train[idx]
+
+    def _create_weights(self):
+        """Create model weights and bias."""
+        self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
+        self._b = np.zeros(1).reshape(1, 1)
+
+    # TODO: Implement linear model.
+
+
 class LinearRegressionTF(object):
     """A TensorFlow implementation of Linear Regression."""
     def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
