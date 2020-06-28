@@ -37,6 +37,10 @@ class LogisticRegression(object):
         self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
         self._b = np.zeros(1).reshape(1, 1)
 
+    def _logit(self, X):
+        """Logit: unnormalized log probability."""
+        return np.matmul(X, self._w) + self._b
+
     def _sigmoid(self, logit):
         """Sigmoid function by stabilization trick.
 
@@ -48,10 +52,6 @@ class LogisticRegression(object):
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
         return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
-
-    def _logit(self, X):
-        """Logit: unnormalized log probability."""
-        return np.matmul(X, self._w) + self._b
     
     def _model(self, X):
         """Logistic regression model."""
