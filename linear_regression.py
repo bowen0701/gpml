@@ -32,8 +32,7 @@ class LinearsRegression(object):
         self._y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples = self._X_train.shape[0]
-        self._n_inputs = self._X_train.shape[1]
+        self._n_examples, self._n_inputs = self._X_train.shape
 
         if shuffle:
             idx = list(range(self._n_examples))
@@ -62,8 +61,7 @@ class LinearRegressionTF(object):
         self._y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples = self._X_train.shape[0]
-        self._n_inputs = self._X_train.shape[1]
+        self._n_examples, self._n_inputs = self._X_train.shape
 
         idx = list(range(self._n_examples))
         if shuffle:
@@ -139,6 +137,20 @@ class LinearRegressionMX(object):
         self.batch_size = batch_size
         self.lr = lr
         self.n_epochs = n_epochs
+
+    def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get dataset and information.s"""
+        self._X_train = X_train
+        self._y_train = y_train
+
+        # Get the numbers of examples and inputs.
+        self._n_examples, self._n_inputs = self._X_train.shape
+
+        idx = list(range(self._n_examples))
+        if shuffle:
+            random.shuffle(idx)
+        self._X_train = self._X_train[idx]
+        self._y_train = self._y_train[idx]
     
     def _linreg(self, X, w, b):
         """Linear model."""
@@ -172,26 +184,28 @@ class LinearRegressionMX(object):
             yield self.X_train.take(idx_batch), self.y_train.take(idx_batch)
     
     def fit(self, X_train, y_train):
-        self.X_train = X_train
-        self.y_train = y_train
-        self.n_examples, self.n_inputs = X_train.shape
-
         net = self._linreg
         loss = self._squared_loss
         w, b = self._create_weights()
 
         for epoch in range(self.n_epochs):
-            for X, y in self._data_iter():
+            total_loss = 0
+
+            for X_train_b, y_train_b in self._data_iter():
                 # Record auto diff & perform backward differention.
                 with autograd.record():
-                    l = loss(net(X, w, b), y)
+                    l = loss(net(X_train_b, w, b), y_train_b)
                 l.backward()
                 self._sgd(w, b)
 
-            train_loss = loss(net(self.X_train, w, b), self.y_train)
-            print('epoch {0}: loss {1}'
-                  .format(epoch + 1, train_loss.mean().asnumpy()))
-        
+                # TODO: Refactor fit()'s batch loss and total loss.
+                batch_loss = loss(net(self.X_train, w, b), self.y_train)
+                total_loss += batch_loss
+
+            if epoch % 100 == 0:
+                print('Epoch {0}: training loss: {1}'
+                      .format(epoch, train_loss.mean().asnumpy()))
+
         self.net = net
         self.w, self.b = w, b
         return self
@@ -234,9 +248,6 @@ class LinearRegressionMXGluon(object):
         return gdata.DataLoader(dataset, self.batch_size, shuffle=True)
 
     def fit(self, X_train, y_train):
-        self.X_train = X_train
-        self.y_train = y_train
-
         net = self._linreg()
         loss = self._squared_loss()
         self._create_weights(net)
