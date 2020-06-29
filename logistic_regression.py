@@ -23,8 +23,7 @@ class LogisticRegression(object):
         self._y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples = self._X_train.shape[0]
-        self._n_inputs = self._X_train.shape[1]
+        self._n_examples, self._n_inputs = self._X_train.shape
 
         if shuffle:
             idx = list(range(self._n_examples))
@@ -137,8 +136,7 @@ class LogisticRegressionTF(object):
         self._y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples = self._X_train.shape[0]
-        self._n_inputs = self._X_train.shape[1]
+        self._n_examples, self._n_inputs = self._X_train.shape
 
         idx = list(range(self._n_examples))
         if shuffle:
