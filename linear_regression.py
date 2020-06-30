@@ -198,9 +198,9 @@ class LinearRegressionMX(object):
                 l.backward()
                 self._sgd(w, b)
 
-            # train_loss = loss(net(self.X_train), self.y_train)
-            # print('epoch {0}: loss {1}'
-            #       .format(epoch + 1, train_loss.mean().asnumpy()))
+            train_loss = loss(net(self.X_train), self.y_train)
+            print('epoch {0}: loss {1}'
+                  .format(epoch + 1, train_loss.mean().asnumpy()))
 
                 # TODO: Refactor fit()'s batch loss and total loss.
                 # batch_loss = loss(net(self.X_train, w, b), self.y_train)
@@ -264,9 +264,9 @@ class LinearRegressionMXGluon(object):
                 l.backward()
                 trainer.step(self.batch_size)
 
-            # train_loss = loss(net(self.X_train), self.y_train)
-            # print('epoch {0}: loss {1}'
-            #       .format(epoch + 1, train_loss.mean().asnumpy()))
+            train_loss = loss(net(self.X_train), self.y_train)
+            print('epoch {0}: loss {1}'
+                  .format(epoch + 1, train_loss.mean().asnumpy()))
 
                 # TODO: Refactor fit()'s batch loss and total loss.
                 # batch_loss = loss(net(self.X_train, w, b), self.y_train)
