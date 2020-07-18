@@ -46,7 +46,7 @@ class LogisticRegression(object):
         sigmoid(z) = 1 / (1 + exp(-z)) 
                    = exp(z) / (1 + exp(z)) 
                    = exp(z - z_max) / (exp(-z_max) + exp(z - z_max)),
-        where z is the logit, and z_max is z - max(0, z).
+        where z is the logit, and z_max = z - max(0, z).
         """
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
@@ -61,12 +61,18 @@ class LogisticRegression(object):
         """Cross entropy loss by stabilizaiton trick.
 
         cross_entropy_loss(y, z) 
-          = - 1/n * \sum_{i=1}^n y_i * p(y_i = 1|x_i) + (1 - y_i) * p(y_i = 0|x_i)
+          = - 1/n * \sum_{i=1}^n y_i * log p(y_i = 1|x_i) + (1 - y_i) * log p(y_i = 0|x_i)
           = - 1/n * \sum_{i=1}^n y_i * (z_i - log(1 + exp(z_i))) + (1 - y_i) * (-log(1 + exp(z_i))),
-        where z is the logit, z_max is z - max(0, z), and log(1 + exp(z)) is the 
-          logsumexp(z) = log(exp(0) + exp(z))
-                       = log((exp(0) + exp(z)) * exp(z_max) / exp(z_max))
-                       = z_max + log(exp(-z_max) + exp(z - z_max)).
+        where z is the logit, z_max = z - max(0, z),
+          log p(y = 1|x)
+            = log (1 / (1 + exp(-z))) 
+            = log (exp(z) / (1 + exp(z)))
+            = z - log(1 + exp(z))
+        and 
+          log(1 + exp(z)) := logsumexp(z)
+            = log(exp(0) + exp(z))
+            = log((exp(0) + exp(z)) * exp(z_max) / exp(z_max))
+            = z_max + log(exp(-z_max) + exp(z - z_max)).
         """
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
