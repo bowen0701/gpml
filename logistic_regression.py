@@ -44,7 +44,7 @@ class LogisticRegression(object):
         """Sigmoid function by stabilization trick.
 
         sigmoid(z) = 1 / (1 + exp(-z)) 
-                   = exp(z) / (1 + exp(z)) 
+                   = exp(z) / (1 + exp(z)) * exp(z_max) / exp(z_max)
                    = exp(z - z_max) / (exp(-z_max) + exp(z - z_max)),
         where z is the logit, and z_max = z - max(0, z).
         """
@@ -71,7 +71,7 @@ class LogisticRegression(object):
         and 
           log(1 + exp(z)) := logsumexp(z)
             = log(exp(0) + exp(z))
-            = log((exp(0) + exp(z)) * exp(z_max) / exp(z_max))
+            = log(exp(0) + exp(z) * exp(z_max) / exp(z_max))
             = z_max + log(exp(-z_max) + exp(z - z_max)).
         """
         logit_max = np.maximum(0, logit)
