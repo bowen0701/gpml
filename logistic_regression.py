@@ -10,6 +10,9 @@ import tensorflow as tf
 np.random.seed(71)
 
 
+# TODO: Remove hidden vars.
+# TODO: Revise notebook.
+
 class LogisticRegression(object):
     """Numpy implementation of Logistic Regression."""
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
@@ -122,8 +125,8 @@ class LogisticRegression(object):
         return self._model(X_test).reshape((-1,))
 
 
-# Reset default graph.
 def reset_tf_graph(seed=71):
+    """Reset default TensorFlow graph."""
     tf.reset_default_graph()
     tf.set_random_seed(seed)
     np.random.seed(seed)
