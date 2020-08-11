@@ -12,7 +12,7 @@ def inner_product(x, y):
 
 
 def inner_product_d(x_d, y_d):
-    """Inner product for dictionaries."""
+    """Inner product for sparse vectors."""
     inner_prod = 0.0
     for k, v in x_d.items():
         if k in y_d:
@@ -26,11 +26,11 @@ def correlation_coeff(x, y):
     Note: To speed up computation, we drop normalized term (n - 1)**(-1),
     since this term is redundant after division with sqrt.
     """
-    x_cen = x - x.mean()
-    y_cen = y - y.mean()
-    cov = inner_product(x_cen, y_cen)
-    var_x = inner_product(x_cen, x_cen)
-    var_y = inner_product(y_cen, y_cen)
+    x_ = x - x.mean()
+    y_ = y - y.mean()
+    cov = inner_product(x_, y_)
+    var_x = inner_product(x_, x_)
+    var_y = inner_product(y_, y_)
     return cov / math.sqrt(var_x * var_y)
 
 
@@ -43,7 +43,7 @@ def cosine_similarity(x, y):
 
 
 def cosine_similarity_d(x_d, y_d):
-    """Cosine similarity for dictionaries."""
+    """Cosine similarity for sparse vectors."""
     inner_prod = inner_product_d(x_d, y_d)
     x = np.array(list(x_d.values()))
     y = np.array(list(y_d.values()))
