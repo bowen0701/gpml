@@ -12,34 +12,33 @@ from mxnet.gluon import nn
 from mxnet.gluon import loss as gloss
 
 
-# TODO: Remove hidden vars.
 # TODO: Revise notebook.
 
 class LinearRegression(object):
     """Numpy implementation of Linear Regression."""
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
-        self._batch_size = batch_size
-        self._lr = lr
-        self._n_epochs = n_epochs
+        self.batch_size = batch_size
+        self.lr = lr
+        self.n_epochs = n_epochs
 
     def get_dataset(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
-        self._X_train = X_train
-        self._y_train = y_train
+        self.X_train = X_train
+        self.y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples, self._n_inputs = self._X_train.shape
+        self.n_examples, self.n_inputs = self.X_train.shape
 
         if shuffle:
-            idx = list(range(self._n_examples))
+            idx = list(range(self.n_examples))
             random.shuffle(idx)
-            self._X_train = self._X_train[idx]
-            self._y_train = self._y_train[idx]
+            self.X_train = self.X_train[idx]
+            self.y_train = self.y_train[idx]
 
     def _create_weights(self):
         """Create model weights and bias."""
-        self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
-        self._b = np.zeros(1).reshape(1, 1)
+        self.w = np.zeros(self.n_inputs).reshape(self.n_inputs, 1)
+        self.b = np.zeros(1).reshape(1, 1)
 
     # TODO: Implement linear model.
 
@@ -54,51 +53,51 @@ def reset_tf_graph(seed=71):
 class LinearRegressionTF(object):
     """A TensorFlow implementation of Linear Regression."""
     def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
-        self._batch_size = batch_size
-        self._n_epochs = n_epochs
-        self._learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.n_epochs = n_epochs
+        self.learning_rate = learning_rate
 
     def get_dataset(self, X_train, y_train, shuffle=True):
         """Get dataset and information.s"""
-        self._X_train = X_train
-        self._y_train = y_train
+        self.X_train = X_train
+        self.y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples, self._n_inputs = self._X_train.shape
+        self.n_examples, self.n_inputs = self.X_train.shape
 
-        idx = list(range(self._n_examples))
+        idx = list(range(self.n_examples))
         if shuffle:
             random.shuffle(idx)
-        self._X_train = self._X_train[idx]
-        self._y_train = self._y_train[idx]
+        self.X_train = self.X_train[idx]
+        self.y_train = self.y_train[idx]
     
     def _create_placeholders(self):
         """Create placeholder for features and response."""
-        self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
-        self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
+        self.X = tf.placeholder(tf.float32, shape=(None, self.n_inputs), name='X')
+        self.y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
         """Create and initialize model weights and bias."""
-        self._w = tf.get_variable(shape=(self._n_inputs, 1), 
-                                  initializer=tf.random_normal_initializer(0, 0.01), 
-                                  name='weights')
-        self._b = tf.get_variable(shape=(1, 1), 
-                                  initializer=tf.zeros_initializer(), name='bias')
+        self.w = tf.get_variable(shape=(self.n_inputs, 1), 
+                                 initializer=tf.random_normal_initializer(0, 0.01), 
+                                 name='weights')
+        self.b = tf.get_variable(shape=(1, 1), 
+                                 initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
         """Create linear model."""
-        self._y_pred = tf.add(tf.matmul(self._X, self._w), self._b, name='y_pred')
+        self.y_pred = tf.add(tf.matmul(self.X, self.w), self.b, name='y_pred')
     
     def _create_loss(self):
         # Create mean squared error loss.
-        self._error = self._y_pred - self._y
-        self._loss = tf.reduce_mean(tf.square(self._error), name='loss')
+        self.error = self.y_pred - self.y
+        self.loss = tf.reduce_mean(tf.square(self.error), name='loss')
     
-    def _create_optimizer(self):
+    def _createoptimizer(self):
         # Create gradient descent optimization.
-        self._optimizer = (
-            tf.train.GradientDescentOptimizer(learning_rate=self._learning_rate)
-            .minimize(self._loss))
+        self.optimizer = (
+            tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
+            .minimize(self.loss))
 
     def build_graph(self):
         """Build computational graph."""
@@ -110,28 +109,28 @@ class LinearRegressionTF(object):
 
     def _fetch_batch(self):
         """Fetch batch dataset."""
-        idx = list(range(self._n_examples))
-        for i in range(0, self._n_examples, self._batch_size):
-            idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
-            yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
+        idx = list(range(self.n_examples))
+        for i in range(0, self.n_examples, self.batch_size):
+            idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
+            yield (self.X_train[idx_batch, :], self.y_train[idx_batch, :])
 
     def fit(self):
         """Fit model."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
-            for epoch in range(self._n_epochs):
+            for epoch in range(self.n_epochs):
                 total_loss = 0
 
                 for X_train_b, y_train_b in self._fetch_batch():
-                    feed_dict = {self._X: X_train_b, self._y: y_train_b}
-                    _, batch_loss = sess.run([self._optimizer, self._loss],
+                    feed_dict = {self.X: X_train_b, self.y: y_train_b}
+                    _, batch_loss = sess.run([self.optimizer, self.loss],
                                              feed_dict=feed_dict)
                     total_loss += batch_loss
 
                 if epoch % 100 == 0:
                     print('Epoch {0}: training loss: {1}'
-                          .format(epoch, total_loss / self._n_examples))
+                          .format(epoch, total_loss / self.n_examples))
 
 
 class LinearRegressionMX(object):
@@ -143,17 +142,17 @@ class LinearRegressionMX(object):
 
     def get_dataset(self, X_train, y_train, shuffle=True):
         """Get dataset and information.s"""
-        self._X_train = X_train
-        self._y_train = y_train
+        self.X_train = X_train
+        self.y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples, self._n_inputs = self._X_train.shape
+        self.n_examples, self.n_inputs = self.X_train.shape
 
-        idx = list(range(self._n_examples))
+        idx = list(range(self.n_examples))
         if shuffle:
             random.shuffle(idx)
-        self._X_train = self._X_train[idx]
-        self._y_train = self._y_train[idx]
+        self.X_train = self.X_train[idx]
+        self.y_train = self.y_train[idx]
     
     def _linreg(self, X, w, b):
         """Linear model."""
