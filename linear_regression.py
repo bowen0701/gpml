@@ -12,8 +12,6 @@ from mxnet.gluon import nn
 from mxnet.gluon import loss as gloss
 
 
-# TODO: Revise notebook.
-
 class LinearRegression(object):
     """Numpy implementation of Linear Regression."""
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
