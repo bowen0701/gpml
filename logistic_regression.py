@@ -10,38 +10,35 @@ import tensorflow as tf
 np.random.seed(71)
 
 
-# TODO: Remove hidden vars.
-# TODO: Revise notebook.
-
 class LogisticRegression(object):
     """Numpy implementation of Logistic Regression."""
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
-        self._batch_size = batch_size
-        self._lr = lr
-        self._n_epochs = n_epochs
+        self.batch_size = batch_size
+        self.lr = lr
+        self.n_epochs = n_epochs
 
     def get_dataset(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
-        self._X_train = X_train
-        self._y_train = y_train
+        self.X_train = X_train
+        self.y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples, self._n_inputs = self._X_train.shape
+        self.n_examples, self.n_inputs = self.X_train.shape
 
         if shuffle:
-            idx = list(range(self._n_examples))
+            idx = list(range(self.n_examples))
             random.shuffle(idx)
-            self._X_train = self._X_train[idx]
-            self._y_train = self._y_train[idx]
+            self.X_train = self.X_train[idx]
+            self.y_train = self.y_train[idx]
 
     def _create_weights(self):
         """Create model weights and bias."""
-        self._w = np.zeros(self._n_inputs).reshape(self._n_inputs, 1)
-        self._b = np.zeros(1).reshape(1, 1)
+        self.w = np.zeros(self.n_inputs).reshape(self.n_inputs, 1)
+        self.b = np.zeros(1).reshape(1, 1)
 
-    def _logit(self, X):
+    def logit(self, X):
         """Logit: unnormalized log probability."""
-        return np.matmul(X, self._w) + self._b
+        return np.matmul(X, self.w) + self.b
 
     def _sigmoid(self, logit):
         """Sigmoid function by stabilization trick.
@@ -57,10 +54,10 @@ class LogisticRegression(object):
     
     def _model(self, X):
         """Logistic regression model."""
-        logit = self._logit(X)
+        logit = self.logit(X)
         return self._sigmoid(logit)
 
-    def _loss(self, y, logit):
+    def loss(self, y, logit):
         """Cross entropy loss by stabilizaiton trick.
 
         cross_entropy_loss(y, z) 
@@ -80,8 +77,8 @@ class LogisticRegression(object):
         logit_max = np.maximum(0, logit)
         logit_stable = logit - logit_max
         logsumexp_stable = logit_max + np.log(np.exp(-logit_max) + np.exp(logit_stable))
-        self._cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
-        return np.mean(self._cross_entropy)
+        self.cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
+        return np.mean(self.cross_entropy)
 
     def _optimize(self, X, y):
         """Optimize by stochastic gradient descent."""
@@ -91,26 +88,26 @@ class LogisticRegression(object):
         dw = -1 / m * np.matmul(X.T, y - y_hat)
         db = -np.mean(y - y_hat)
         
-        for (param, grad) in zip([self._w, self._b], [dw, db]):
-            param[:] = param - self._lr * grad
+        for (param, grad) in zip([self.w, self.b], [dw, db]):
+            param[:] = param - self.lr * grad
             
     def _fetch_batch(self):
         """Fetch batch dataset."""
-        idx = list(range(self._n_examples))
-        for i in range(0, self._n_examples, self._batch_size):
-            idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
-            yield (self._X_train.take(idx_batch, axis=0), self._y_train.take(idx_batch, axis=0))
+        idx = list(range(self.n_examples))
+        for i in range(0, self.n_examples, self.batch_size):
+            idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
+            yield (self.X_train.take(idx_batch, axis=0), self.y_train.take(idx_batch, axis=0))
 
     def fit(self):
         """Fit model."""
         self._create_weights()
 
-        for epoch in range(self._n_epochs):
+        for epoch in range(self.n_epochs):
             total_loss = 0
             for X_train_b, y_train_b in self._fetch_batch():
                 y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
                 self._optimize(X_train_b, y_train_b)
-                train_loss = self._loss(y_train_b, self._logit(X_train_b))
+                train_loss = self.loss(y_train_b, self.logit(X_train_b))
                 total_loss += train_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
@@ -119,7 +116,7 @@ class LogisticRegression(object):
         return self
 
     def get_coeff(self):
-        return self._b, self._w.reshape((-1,))
+        return self.b, self.w.reshape((-1,))
 
     def predict(self, X_test):
         return self._model(X_test).reshape((-1,))
@@ -135,55 +132,55 @@ def reset_tf_graph(seed=71):
 class LogisticRegressionTF(object):
     """A TensorFlow implementation of Logistic Regression."""
     def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
-        self._batch_size = batch_size
-        self._n_epochs = n_epochs
-        self._learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.n_epochs = n_epochs
+        self.learning_rate = learning_rate
 
     def get_dataset(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
-        self._X_train = X_train
-        self._y_train = y_train
+        self.X_train = X_train
+        self.y_train = y_train
 
         # Get the numbers of examples and inputs.
-        self._n_examples, self._n_inputs = self._X_train.shape
+        self.n_examples, self.n_inputs = self.X_train.shape
 
-        idx = list(range(self._n_examples))
+        idx = list(range(self.n_examples))
         if shuffle:
             random.shuffle(idx)
-        self._X_train = self._X_train[idx]
-        self._y_train = self._y_train[idx]
+        self.X_train = self.X_train[idx]
+        self.y_train = self.y_train[idx]
     
     def _create_placeholders(self):
         """Create placeholder for features and labels."""
-        self._X = tf.placeholder(tf.float32, shape=(None, self._n_inputs), name='X')
-        self._y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
+        self.X = tf.placeholder(tf.float32, shape=(None, self.n_inputs), name='X')
+        self.y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
     
     def _create_weights(self):
         """Create and initialize model weights and bias."""
-        self._w = tf.get_variable(shape=(self._n_inputs, 1), 
-                                  initializer=tf.random_normal_initializer(0, 0.01), 
-                                  name='weights')
-        self._b = tf.get_variable(shape=(1, 1), 
-                                  initializer=tf.zeros_initializer(), name='bias')
+        self.w = tf.get_variable(shape=(self.n_inputs, 1), 
+                                 initializer=tf.random_normal_initializer(0, 0.01), 
+                                 name='weights')
+        self.b = tf.get_variable(shape=(1, 1), 
+                                 initializer=tf.zeros_initializer(), name='bias')
     
     def _create_model(self):
         # Create logistic regression model.
-        self._logit = tf.add(tf.matmul(self._X, self._w), self._b, name='logit')
-        self._logreg = tf.math.sigmoid(self._logit, name='logreg')
+        self.logit = tf.add(tf.matmul(self.X, self.w), self.b, name='logit')
+        self.y_pred = tf.math.sigmoid(self.logit, name='y_pred')
 
     def _create_loss(self):
         # Create cross entropy loss.
-        self._cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=self._y,
-            logits=self._logit,
+        self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
+            labels=self.y,
+            logits=self.logit,
             name='y_pred')   
-        self._loss = tf.reduce_mean(self._cross_entropy, name='loss')
+        self.loss = tf.reduce_mean(self.cross_entropy, name='loss')
 
     def _create_optimizer(self):
         # Create gradient descent optimization.
         self._optimizer = (
-            tf.train.GradientDescentOptimizer(learning_rate=self._learning_rate)
-            .minimize(self._loss))
+            tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
+            .minimize(self.loss))
 
     def build_graph(self):
         """Build computational graph."""
@@ -195,27 +192,27 @@ class LogisticRegressionTF(object):
 
     def _fetch_batch(self):
         """Fetch batch dataset.s"""
-        idx = list(range(self._n_examples))
-        for i in range(0, self._n_examples, self._batch_size):
-            idx_batch = idx[i:min(i + self._batch_size, self._n_examples)]
-            yield (self._X_train[idx_batch, :], self._y_train[idx_batch, :])
+        idx = list(range(self.n_examples))
+        for i in range(0, self.n_examples, self.batch_size):
+            idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
+            yield (self.X_train[idx_batch, :], self.y_train[idx_batch, :])
 
     def fit(self):
         """Fit model."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
-            for epoch in range(self._n_epochs):
+            for epoch in range(self.n_epochs):
                 total_loss = 0
                 for X_train_b, y_train_b in self._fetch_batch():
-                    feed_dict = {self._X: X_train_b, self._y: y_train_b}
-                    _, batch_loss = sess.run([self._optimizer, self._loss],
+                    feed_dict = {self.X: X_train_b, self.y: y_train_b}
+                    _, batch_loss = sess.run([self._optimizer, self.loss],
                                              feed_dict=feed_dict)
                     total_loss += batch_loss * X_train_b.shape[0]
 
                 if epoch % 100 == 0:
                     print('Epoch {0}: training loss: {1}'
-                          .format(epoch, total_loss / self._n_examples))
+                          .format(epoch, total_loss / self.n_examples))
 
 
 def main():
