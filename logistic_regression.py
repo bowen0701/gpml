@@ -87,10 +87,10 @@ class LogisticRegression(object):
         y_hat = self._model(X) 
         dw = -1 / m * np.matmul(X.T, y - y_hat)
         db = -np.mean(y - y_hat)
-        
+
         for (param, grad) in zip([self.w, self.b], [dw, db]):
             param[:] = param - self.lr * grad
-            
+
     def _fetch_batch(self):
         """Fetch batch dataset."""
         idx = list(range(self.n_examples))
