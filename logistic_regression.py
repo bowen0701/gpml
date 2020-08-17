@@ -227,9 +227,11 @@ class LogisticRegressionTF(object):
 
 
 def main():
+    import sklearn
     from sklearn.datasets import load_breast_cancer
-    from sklearn.preprocessing import StandardScaler
-
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import MinMaxScaler
+    from sklearn.linear_model import LogisticRegression as LogisticRegressionSklearn
     from metrics import accuracy
 
     breast_cancer = load_breast_cancer()
@@ -248,6 +250,11 @@ def main():
     X_test = data[-test_size:]
     y_train = label[:-test_size]
     y_test = label[-test_size:]
+
+    # Feature engineering for standardizing features by min-max scaler.
+    min_max_scaler = MinMaxScaler()
+    X_train = min_max_scaler.fit_transform(X_train_raw)
+    X_test = min_max_scaler.transform(X_test_raw)
 
     # Train Numpy linear regression model.
     logreg = LogisticRegression(batch_size=64, lr=1, n_epochs=1000)
@@ -269,13 +276,23 @@ def main():
     logreg_tf.build_graph()
     logreg_tf.fit()
 
-    # Predicted probabilities for training data.
     p_train_hat = logreg.predict(X_train)
     y_train_hat = (p_train_hat > 0.5) * 1
     print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
     p_test_hat = logreg.predict(X_test)
     y_test_hat = (p_test_hat > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
+
+    # Benchmark with sklearn's Logistic Regression.
+    logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
+    logreg_sk.fit(X_train, y_train)
+
+    p_train_hat = logreg_sk.predict(X_train)
+    y_train_hat = (p_train_hat > 0.5) * 1
+    print('Training accuracy: {}'.format(accuracy(y_train, y_train_hat)))
+    p_test_hat = logreg_sk.predict(X_test)
+    y_test_hat = (p_test_hat > 0.5) * 1
+    print('Test accuracy: {}'.format(accuracy(y_test, y_test_hat)))
 
 
 if __name__ == '__main__':
