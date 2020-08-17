@@ -15,7 +15,7 @@ class LogisticRegression(object):
         self.lr = lr
         self.n_epochs = n_epochs
 
-    def get_dataset(self, X_train, y_train, shuffle=True):
+    def get_data(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
         self.X_train = X_train
         self.y_train = y_train
@@ -134,7 +134,7 @@ class LogisticRegressionTF(object):
         self.n_epochs = n_epochs
         self.learning_rate = learning_rate
 
-    def get_dataset(self, X_train, y_train, shuffle=True):
+    def get_data(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
         self.X_train = X_train
         self.y_train = y_train
@@ -155,30 +155,29 @@ class LogisticRegressionTF(object):
 
     def _create_weights(self):
         """Create and initialize model weights and bias."""
-        self.w = tf.get_variable(shape=(self.n_inputs, 1),
-                                 initializer=tf.random_normal_initializer(0, 0.01),
+        self.w = tf.get_variable(shape=[self.n_inputs, 1],
+                                 initializer=tf.random_normal_initializer(),
                                  name='weights')
-        self.b = tf.get_variable(shape=(1, 1),
-                                 initializer=tf.zeros_initializer(), 
+        self.b = tf.get_variable(shape=[1],
+                                 initializer=tf.zeros_initializer(),
                                  name='bias')
 
     def _create_model(self):
         # Create logistic regression model.
-        self.logit = tf.matmul(self.X, self.w) + self.b
-        self.y_hat = tf.math.sigmoid(self.logit, name='y_hat')
+        self.logits = tf.matmul(self.X, self.w) + self.b
 
     def _create_loss(self):
         # Create cross entropy loss.
         self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
             labels=self.y,
-            logits=self.logit,
-            name='y_pred')
-        self.loss = tf.reduce_mean(self.cross_entropy, name='loss') 
+            logits=self.logits,
+            name='cross_entropy')
+        self.loss = tf.reduce_mean(self.cross_entropy, name='loss')
 
     def _create_optimizer(self):
-        # Create gradient descent optimization. 
-        self._optimizer = (
-            tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate) 
+        # Create gradient descent optimization.
+        self.optimizer = (
+            tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
             .minimize(self.loss))
 
     def build_graph(self):
@@ -190,7 +189,7 @@ class LogisticRegressionTF(object):
         self._create_optimizer()
 
     def _fetch_batch(self): 
-        """Fetch batch dataset.s"""
+        """Fetch batch dataset."""
         idx = list(range(self.n_examples))
         for i in range(0, self.n_examples, self.batch_size):
             idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
@@ -198,14 +197,16 @@ class LogisticRegressionTF(object):
 
     def fit(self):
         """Fit model."""
-        with tf.Session() as sess:
+        saver = tf.train.Saver()
+
+        with tf.Session() as sess:            
             sess.run(tf.global_variables_initializer())
 
-            for epoch in range(self.n_epochs):
+            for epoch in range(1, self.n_epochs + 1):
                 total_loss = 0
                 for X_train_b, y_train_b in self._fetch_batch():
                     feed_dict = {self.X: X_train_b, self.y: y_train_b}
-                    _, batch_loss = sess.run([self._optimizer, self.loss],
+                    _, batch_loss = sess.run([self.optimizer, self.loss],
                                              feed_dict=feed_dict)
                     total_loss += batch_loss * X_train_b.shape[0]
 
@@ -213,17 +214,25 @@ class LogisticRegressionTF(object):
                     print('Epoch {0}: training loss: {1}'
                           .format(epoch, total_loss / self.n_examples))
 
+            # Save model.
+            saver.save(sess, 'checkpoints/logreg')
+
     def get_coeff(self):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
+            # Load model.
+            saver = tf.train.Saver()
+            saver.restore(sess, 'checkpoints/logreg')
             return self.b.eval(), self.w.eval().reshape((-1,))
 
     def predict(self, X):
-        # return self._model(X).reshape((-1,))
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            logit = tf.matmul(self.X, self.w) + self.b
-            return tf.math.sigmoid(self.logit).eval()
+            # Load model.
+            saver = tf.train.Saver()
+            saver.restore(sess, 'checkpoints/logreg')
+            logit = tf.matmul(X, self.w) + self.b
+            return tf.math.sigmoid(logit).eval().reshape((-1,))
 
 
 def main():
@@ -256,9 +265,10 @@ def main():
     X_train = min_max_scaler.fit_transform(X_train_raw)
     X_test = min_max_scaler.transform(X_test_raw)
 
-    # Train Numpy linear regression model.
+    # Train Numpy logistic regression model.
+    print("Fit logreg in NumPy.")
     logreg = LogisticRegression(batch_size=64, lr=1, n_epochs=1000)
-    logreg.get_dataset(X_train, y_train, shuffle=True)
+    logreg.get_data(X_train, y_train, shuffle=True)
     logreg.fit()
 
     p_pred_train = logreg.predict(X_train)
@@ -269,10 +279,11 @@ def main():
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
     # Train TensorFlow linear regression model.
+    print("Fit logreg in TensorFlow.")
     reset_tf_graph()
     logreg_tf = LogisticRegressionTF(
         batch_size=64, learning_rate=1, n_epochs=1000)
-    logreg_tf.get_dataset(X_train, y_train, shuffle=True)
+    logreg_tf.get_data(X_train, y_train, shuffle=True)
     logreg_tf.build_graph()
     logreg_tf.fit()
 
@@ -284,6 +295,7 @@ def main():
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
     # Benchmark with sklearn's Logistic Regression.
+    print('Benchmark with logreg in Scikit-Learn.')
     logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
     logreg_sk.fit(X_train, y_train)
 
