@@ -52,7 +52,11 @@ def cosine_similarity_d(x_d, y_d):
     return inner_prod / math.sqrt(norm2_x * norm2_y)
 
 
-def accuracy(y_true, y_pred):
+def accuracy(y_true, y_hat):
     """Accuracy."""
-    return (y_true == y_pred).mean()
+    return (y_true == y_hat.reshape(y_true.shape)).mean()
 
+
+def mean_squared_error(y_true, y_hat):
+    """Mean squared error."""
+    return ((y_true - y_hat.reshape(y_true.shape)) ** 2).mean()
