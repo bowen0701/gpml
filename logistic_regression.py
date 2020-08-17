@@ -85,8 +85,8 @@ class LogisticRegression(object):
         m = X.shape[0]
 
         y_hat = self._model(X) 
-        dw = -1 / m * np.matmul(X.T, y - y_hat)
-        db = -np.mean(y - y_hat)
+        dw = 1 / m * np.matmul(X.T, y_hat - y)
+        db = np.mean(y_hat - y)
 
         for (param, grad) in zip([self.w, self.b], [dw, db]):
             param[:] = param - self.lr * grad
@@ -118,8 +118,8 @@ class LogisticRegression(object):
     def get_coeff(self):
         return self.b, self.w.reshape((-1,))
 
-    def predict(self, X_test):
-        return self._model(X_test).reshape((-1,))
+    def predict(self, X):
+        return self._model(X).reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
