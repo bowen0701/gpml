@@ -120,6 +120,112 @@ class LogisticRegression(object):
         return self._model(X).reshape((-1,))
 
 
+def reset_tf_graph(seed=71):
+    """Reset default TensorFlow graph."""
+    tf.reset_default_graph()
+    tf.set_random_seed(seed)
+    np.random.seed(seed)
+
+
+class LogisticRegressionTF(object):
+    """A TensorFlow implementation of Logistic Regression."""
+    def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
+        self.batch_size = batch_size
+        self.n_epochs = n_epochs
+        self.learning_rate = learning_rate
+
+    def get_dataset(self, X_train, y_train, shuffle=True):
+        """Get dataset and information."""
+        self.X_train = X_train
+        self.y_train = y_train
+
+        # Get the numbers of examples and inputs.
+        self.n_examples, self.n_inputs = self.X_train.shape
+
+        idx = list(range(self.n_examples))
+        if shuffle:
+            random.shuffle(idx)
+        self.X_train = self.X_train[idx]
+        self.y_train = self.y_train[idx]
+
+    def _create_placeholders(self):
+        """Create placeholder for features and labels."""
+        self.X = tf.placeholder(tf.float32, shape=(None, self.n_inputs), name='X')
+        self.y = tf.placeholder(tf.float32, shape=(None, 1), name='y')
+
+    def _create_weights(self):
+        """Create and initialize model weights and bias."""
+        self.w = tf.get_variable(shape=(self.n_inputs, 1),
+                                 initializer=tf.random_normal_initializer(0, 0.01),
+                                 name='weights')
+        self.b = tf.get_variable(shape=(1, 1),
+                                 initializer=tf.zeros_initializer(), 
+                                 name='bias')
+
+    def _create_model(self):
+        # Create logistic regression model.
+        self.logit = tf.matmul(self.X, self.w) + self.b
+        self.y_hat = tf.math.sigmoid(self.logit, name='y_hat')
+
+    def _create_loss(self):
+        # Create cross entropy loss.
+        self.cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
+            labels=self.y,
+            logits=self.logit,
+            name='y_pred')
+        self.loss = tf.reduce_mean(self.cross_entropy, name='loss') 
+
+    def _create_optimizer(self):
+        # Create gradient descent optimization. 
+        self._optimizer = (
+            tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate) 
+            .minimize(self.loss))
+
+    def build_graph(self):
+        """Build computational graph."""
+        self._create_placeholders()
+        self._create_weights()
+        self._create_model()
+        self._create_loss()
+        self._create_optimizer()
+
+    def _fetch_batch(self): 
+        """Fetch batch dataset.s"""
+        idx = list(range(self.n_examples))
+        for i in range(0, self.n_examples, self.batch_size):
+            idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
+            yield (self.X_train[idx_batch, :], self.y_train[idx_batch].reshape(-1, 1))
+
+    def fit(self):
+        """Fit model."""
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+
+            for epoch in range(self.n_epochs):
+                total_loss = 0
+                for X_train_b, y_train_b in self._fetch_batch():
+                    feed_dict = {self.X: X_train_b, self.y: y_train_b}
+                    _, batch_loss = sess.run([self._optimizer, self.loss],
+                                             feed_dict=feed_dict)
+                    total_loss += batch_loss * X_train_b.shape[0]
+
+                if epoch % 100 == 0:
+                    print('Epoch {0}: training loss: {1}'
+                          .format(epoch, total_loss / self.n_examples))
+
+    def get_coeff(self):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            return self.b.eval(), self.w.eval().reshape((-1,))
+
+    def predict(self, X):
+        # return self._model(X).reshape((-1,))
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            logit = tf.matmul(self.X, self.w) + self.b
+            return tf.math.sigmoid(self.logit).eval()
+
+
 def main():
     from sklearn.datasets import load_breast_cancer
     from sklearn.preprocessing import StandardScaler
@@ -150,10 +256,26 @@ def main():
 
     p_pred_train = logreg.predict(X_train)
     y_pred_train = (p_pred_train > 0.5) * 1
-    accuracy(y_train, y_pred_train)
+    print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
     p_pred_test = logreg.predict(X_test)
     y_pred_test = (p_pred_test > 0.5) * 1
-    accuracy(y_test, y_pred_test)
+    print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
+
+    # Train TensorFlow linear regression model.
+    reset_tf_graph()
+    logreg_tf = LogisticRegressionTF(
+        batch_size=64, learning_rate=1, n_epochs=1000)
+    logreg_tf.get_dataset(X_train, y_train, shuffle=True)
+    logreg_tf.build_graph()
+    logreg_tf.fit()
+
+    # Predicted probabilities for training data.
+    p_train_hat = logreg.predict(X_train)
+    y_train_hat = (p_train_hat > 0.5) * 1
+    print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
+    p_test_hat = logreg.predict(X_test)
+    y_test_hat = (p_test_hat > 0.5) * 1
+    print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
 
 if __name__ == '__main__':
