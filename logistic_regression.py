@@ -34,7 +34,7 @@ class LogisticRegression(object):
         self.w = np.zeros(self.n_inputs).reshape(self.n_inputs, 1)
         self.b = np.zeros(1).reshape(1, 1)
 
-    def logit(self, X):
+    def _logit(self, X):
         """Logit: unnormalized log probability."""
         return np.matmul(X, self.w) + self.b
 
@@ -52,10 +52,10 @@ class LogisticRegression(object):
     
     def _model(self, X):
         """Logistic regression model."""
-        logit = self.logit(X)
+        logit = self._logit(X)
         return self._sigmoid(logit)
 
-    def loss(self, y, logit):
+    def _loss(self, y, logit):
         """Cross entropy loss by stabilizaiton trick.
 
         cross_entropy_loss(y, z) 
@@ -105,7 +105,7 @@ class LogisticRegression(object):
             for X_train_b, y_train_b in self._fetch_batch():
                 y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
                 self._optimize(X_train_b, y_train_b)
-                train_loss = self.loss(y_train_b, self.logit(X_train_b))
+                train_loss = self._loss(y_train_b, self._logit(X_train_b))
                 total_loss += train_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
