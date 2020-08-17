@@ -109,7 +109,7 @@ class LogisticRegression(object):
                 total_loss += train_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
-                print('epoch {0}: training loss {1}'.format(epoch, total_loss))
+                print('epoch {0}: training loss {1}'.format(epoch, total_loss / self.n_examples))
 
         return self
 
