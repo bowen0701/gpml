@@ -94,7 +94,8 @@ class LogisticRegression(object):
         idx = list(range(self.n_examples))
         for i in range(0, self.n_examples, self.batch_size):
             idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
-            yield (self.X_train.take(idx_batch, axis=0), self.y_train.take(idx_batch, axis=0))
+            yield (self.X_train.take(idx_batch, axis=0), 
+                   self.y_train.take(idx_batch, axis=0))
 
     def fit(self):
         """Fit model."""
@@ -109,7 +110,8 @@ class LogisticRegression(object):
                 total_loss += train_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
-                print('epoch {0}: training loss {1}'.format(epoch, total_loss / self.n_examples))
+                print('epoch {0}: training loss {1}'
+                      .format(epoch, total_loss / self.n_examples))
 
         return self
 
@@ -202,7 +204,8 @@ class LogisticRegressionTF(object):
         idx = list(range(self.n_examples))
         for i in range(0, self.n_examples, self.batch_size):
             idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
-            yield (self.X_train[idx_batch, :], self.y_train[idx_batch].reshape(-1, 1))
+            yield (self.X_train[idx_batch, :], 
+                   self.y_train[idx_batch].reshape(-1, 1))
 
     def fit(self):
         """Fit model."""

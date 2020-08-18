@@ -5,6 +5,12 @@ from __future__ import print_function
 import random
 import numpy as np
 
+import tensorflow as tf
+from mxnet import nd, autograd, init, gluon
+from mxnet.gluon import data as gdata
+from mxnet.gluon import nn
+from mxnet.gluon import loss as gloss
+
 np.random.seed(71)
 
 
@@ -15,7 +21,7 @@ class LinearRegression(object):
         self.lr = lr
         self.n_epochs = n_epochs
 
-    def get_dataset(self, X_train, y_train, shuffle=True):
+    def get_data(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
         self.X_train = X_train
         self.y_train = y_train
@@ -63,7 +69,8 @@ class LinearRegression(object):
         idx = list(range(self.n_examples))
         for i in range(0, self.n_examples, self.batch_size):
             idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
-            yield (self.X_train.take(idx_batch, axis=0), self.y_train.take(idx_batch, axis=0))
+            yield (self.X_train.take(idx_batch, axis=0), 
+                   self.y_train.take(idx_batch, axis=0))
 
     def fit(self):
         """Fit model."""
@@ -78,7 +85,8 @@ class LinearRegression(object):
                 total_loss += train_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
-                print('epoch {0}: training loss {1}'.format(epoch, total_loss / self.n_examples))
+                print('epoch {0}: training loss {1}'
+                      .format(epoch, total_loss / self.n_examples))
 
         return self
 
@@ -103,7 +111,7 @@ class LinearRegressionTF(object):
         self.n_epochs = n_epochs
         self.learning_rate = learning_rate
 
-    def get_dataset(self, X_train, y_train, shuffle=True):
+    def get_data(self, X_train, y_train, shuffle=True):
         """Get dataset and information.s"""
         self.X_train = X_train
         self.y_train = y_train
@@ -186,7 +194,7 @@ class LinearRegressionMX(object):
         self.lr = lr
         self.n_epochs = n_epochs
 
-    def get_dataset(self, X_train, y_train, shuffle=True):
+    def get_data(self, X_train, y_train, shuffle=True):
         """Get dataset and information."""
         self.X_train = X_train
         self.y_train = y_train
@@ -296,8 +304,8 @@ class LinearRegressionMXGluon(object):
             net.collect_params(), 'sgd', {'learning_rate': self.lr})
 
     def _fetch_batch(self):
-        dataset = gdata.ArrayDataset(self.X_train, self.y_train)
-        return gdata.DataLoader(dataset, self.batch_size, shuffle=True)
+        data = gdata.ArrayDataset(self.X_train, self.y_train)
+        return gdata.DataLoader(data, self.batch_size, shuffle=True)
 
     def fit(self, X_train, y_train): 
         net = self._linreg() 
@@ -368,7 +376,7 @@ def main():
 
     # Train Numpy linear regression model.
     linreg = LinearRegression(batch_size=64, lr=0.1, n_epochs=1000)
-    linreg.get_dataset(X_train, y_train, shuffle=True)
+    linreg.get_data(X_train, y_train, shuffle=True)
     linreg.fit()
     print(linreg.get_coeff())
     y_train_hat = linreg.predict(X_train)
