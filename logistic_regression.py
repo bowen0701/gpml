@@ -243,7 +243,6 @@ class LogisticRegressionTF(object):
             # Load model.
             saver = tf.train.Saver()
             saver.restore(sess, 'checkpoints/logreg')
-            # logit = tf.matmul(X, self.w) + self.b
             return self._model(X).eval().reshape((-1,))
 
 
