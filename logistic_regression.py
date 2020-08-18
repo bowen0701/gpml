@@ -162,9 +162,18 @@ class LogisticRegressionTF(object):
                                  initializer=tf.zeros_initializer(),
                                  name='bias')
 
+    def _logit(self, X):
+        """Logit: unnormalized log probability."""
+        return tf.matmul(X, self.w) + self.b
+
+    def _model(self, X):
+        """Logistic regression model."""
+        logits = self._logit(X)
+        return tf.math.sigmoid(logits)
+
     def _create_model(self):
         # Create logistic regression model.
-        self.logits = tf.matmul(self.X, self.w) + self.b
+        self.logits = self._logit(self.X)
 
     def _create_loss(self):
         # Create cross entropy loss.
@@ -231,8 +240,8 @@ class LogisticRegressionTF(object):
             # Load model.
             saver = tf.train.Saver()
             saver.restore(sess, 'checkpoints/logreg')
-            logit = tf.matmul(X, self.w) + self.b
-            return tf.math.sigmoid(logit).eval().reshape((-1,))
+            # logit = tf.matmul(X, self.w) + self.b
+            return self._model(X).eval().reshape((-1,))
 
 
 def main():
@@ -287,10 +296,10 @@ def main():
     logreg_tf.build_graph()
     logreg_tf.fit()
 
-    p_train_hat = logreg.predict(X_train)
+    p_train_hat = logreg_tf.predict(X_train)
     y_train_hat = (p_train_hat > 0.5) * 1
     print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
-    p_test_hat = logreg.predict(X_test)
+    p_test_hat = logreg_tf.predict(X_test)
     y_test_hat = (p_test_hat > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
