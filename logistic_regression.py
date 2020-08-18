@@ -82,9 +82,9 @@ class LogisticRegression(object):
         """Optimize by stochastic gradient descent."""
         m = X.shape[0]
 
-        y_hat = self._model(X) 
-        dw = 1 / m * np.matmul(X.T, y_hat - y)
-        db = np.mean(y_hat - y)
+        y_ = self._model(X) 
+        dw = 1 / m * np.matmul(X.T, y_ - y)
+        db = np.mean(y_ - y)
 
         for (param, grad) in zip([self.w, self.b], [dw, db]):
             param[:] = param - self.lr * grad
