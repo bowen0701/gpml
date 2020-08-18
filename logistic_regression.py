@@ -298,11 +298,11 @@ def main():
     logreg_tf.build_graph()
     logreg_tf.fit()
 
-    p_train_hat = logreg_tf.predict(X_train)
-    y_train_hat = (p_train_hat > 0.5) * 1
+    p_train_ = logreg_tf.predict(X_train)
+    y_train_ = (p_train_ > 0.5) * 1
     print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
-    p_test_hat = logreg_tf.predict(X_test)
-    y_test_hat = (p_test_hat > 0.5) * 1
+    p_test_ = logreg_tf.predict(X_test)
+    y_test_ = (p_test_ > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
     # Benchmark with sklearn's Logistic Regression.
@@ -310,12 +310,12 @@ def main():
     logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
     logreg_sk.fit(X_train, y_train)
 
-    p_train_hat = logreg_sk.predict(X_train)
-    y_train_hat = (p_train_hat > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_train_hat)))
-    p_test_hat = logreg_sk.predict(X_test)
-    y_test_hat = (p_test_hat > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_test_hat)))
+    p_train_ = logreg_sk.predict(X_train)
+    y_train_ = (p_train_ > 0.5) * 1
+    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
+    p_test_ = logreg_sk.predict(X_test)
+    y_test_ = (p_test_ > 0.5) * 1
+    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
 
 
 if __name__ == '__main__':
