@@ -44,22 +44,22 @@ class LinearRegression(object):
         """Linear regression model."""
         return np.matmul(X, self.w) + self.b
 
-    def _loss(self, y, y_hat):
+    def _loss(self, y, y_):
         """Squared error loss.
 
-        # squared_error_loss(y, y_hat) 
-        #   = - 1/n * \sum_{i=1}^n (y_i - y_hat_i)^2
+        # squared_error_loss(y, y_) 
+        #   = - 1/n * \sum_{i=1}^n (y_i - y__i)^2
         """
-        self.squared_error = np.square(y - y_hat)
+        self.squared_error = np.square(y - y_)
         return np.mean(self.squared_error)
 
     def _optimize(self, X, y):
         """Optimize by stochastic gradient descent."""
         m = X.shape[0]
 
-        y_hat = self._model(X) 
-        dw = 1 / m * np.matmul(X.T, y_hat - y)
-        db = np.mean(y_hat - y)
+        y_ = self._model(X) 
+        dw = 1 / m * np.matmul(X.T, y_ - y)
+        db = np.mean(y_ - y)
 
         for (param, grad) in zip([self.w, self.b], [dw, db]):
             param[:] = param - self.lr * grad
@@ -94,7 +94,7 @@ class LinearRegression(object):
         return self.b, self.w.reshape((-1,))
 
     def predict(self, X):
-        return self._model(X)
+        return self._model(X).reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
@@ -132,22 +132,26 @@ class LinearRegressionTF(object):
 
     def _create_weights(self):
         """Create and initialize model weights and bias."""
-        self.w = tf.get_variable(shape=(self.n_inputs, 1), 
-                                 initializer=tf.random_normal_initializer(0, 0.01), 
+        self.w = tf.get_variable(shape=[self.n_inputs, 1],
+                                 initializer=tf.random_normal_initializer(),
                                  name='weights')
-        self.b = tf.get_variable(shape=(1, 1), 
-                                 initializer=tf.zeros_initializer(), name='bias')
+        self.b = tf.get_variable(shape=[1],
+                                 initializer=tf.zeros_initializer(),
+                                 name='bias')
+
+    def _model(self, X):
+        """Linear regression model."""
+        return tf.matmul(X, self.w) + self.b
 
     def _create_model(self):
         """Create linear model."""
-        self.y_hat = tf.add(tf.matmul(self.X, self.w), self.b, name='y_pred')
+        self.y_ = self._model(self.X)
 
     def _create_loss(self):
         # Create mean squared error loss.
-        self.error = self.y_hat - self.y
-        self.loss = tf.reduce_mean(tf.square(self.error), name='loss')
+        self.loss = tf.reduce_mean(tf.square(self.y_ - self.y), name='loss')
 
-    def _createoptimizer(self):
+    def _create_optimizer(self):
         # Create gradient descent optimization.
         self.optimizer = (
             tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
@@ -166,25 +170,45 @@ class LinearRegressionTF(object):
         idx = list(range(self.n_examples))
         for i in range(0, self.n_examples, self.batch_size):
             idx_batch = idx[i:min(i + self.batch_size, self.n_examples)]
-            yield (self.X_train[idx_batch, :], self.y_train[idx_batch, :])
+            yield (self.X_train[idx_batch, :], self.y_train[idx_batch].reshape(-1, 1))
 
     def fit(self):
         """Fit model."""
+        saver = tf.train.Saver()
+
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
-            for epoch in range(self.n_epochs):
+            for epoch in range(1, self.n_epochs + 1):
                 total_loss = 0
-
                 for X_train_b, y_train_b in self._fetch_batch():
                     feed_dict = {self.X: X_train_b, self.y: y_train_b}
                     _, batch_loss = sess.run([self.optimizer, self.loss],
                                              feed_dict=feed_dict)
-                    total_loss += batch_loss
+                    total_loss += batch_loss * X_train_b.shape[0]
 
                 if epoch % 100 == 0:
                     print('Epoch {0}: training loss: {1}'
                           .format(epoch, total_loss / self.n_examples))
+
+            # Save model.
+            saver.save(sess, 'checkpoints/linreg')
+
+    def get_coeff(self):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            # Load model.
+            saver = tf.train.Saver()
+            saver.restore(sess, 'checkpoints/linreg')
+            return self.b.eval(), self.w.eval().reshape((-1,))
+
+    def predict(self, X):
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            # Load model.
+            saver = tf.train.Saver()
+            saver.restore(sess, 'checkpoints/linreg')
+            return self._model(X).eval().reshape((-1,))
 
 
 class LinearRegressionMX(object):
@@ -212,9 +236,9 @@ class LinearRegressionMX(object):
         """Linear model."""
         return nd.dot(X, w) + b
 
-    def _squared_loss(self, y_hat, y):
+    def _squared_loss(self, y, y_):
         """Squared loss."""
-        return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
+        return (y_ - y.reshape(y_.shape)) ** 2 / 2
 
     def _create_weights(self):
         """Create and initialize model weights and bias and attach gradients."""
@@ -379,22 +403,34 @@ def main():
     linreg.get_data(X_train, y_train, shuffle=True)
     linreg.fit()
     print(linreg.get_coeff())
-    y_train_hat = linreg.predict(X_train)
+    y_train_ = linreg.predict(X_train)
     print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train, y_train_hat)))
-    y_test_hat = linreg.predict(X_test)
+           .format(mean_squared_error(y_train, y_train_)))
+    y_test_ = linreg.predict(X_test)
     print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test, y_test_hat)))
+           .format(mean_squared_error(y_test, y_test_)))
+
+    # Train TensorFlow linear regression model.
+    linreg_tf = LinearRegressionTF(batch_size=64, learning_rate=0.1, n_epochs=1000)
+    linreg_tf.get_data(X_train, y_train, shuffle=True)
+    linreg_tf.fit()
+    print(linreg_tf.get_coeff())
+    y_train_ = linreg_tf.predict(X_train)
+    print('Training mean squared error: {}'
+           .format(mean_squared_error(y_train, y_train_)))
+    y_test_ = linreg_tf.predict(X_test)
+    print('Test mean squared error: {}'
+           .format(mean_squared_error(y_test, y_test_)))
 
     # Benchmark with sklearn's linear regression model.
     linreg_sk = LinearRegressionSklearn()
     linreg_sk.fit(X_train, y_train) 
-    y_train_hat = linreg_sk.predict(X_train)
+    y_train_ = linreg_sk.predict(X_train)
     print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train, y_train_hat)))
-    y_test_hat = linreg_sk.predict(X_test)
+           .format(mean_squared_error(y_train, y_train_)))
+    y_test_ = linreg_sk.predict(X_test)
     print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test, y_test_hat)))
+           .format(mean_squared_error(y_test, y_test_)))
 
 
 
