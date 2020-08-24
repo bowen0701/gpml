@@ -16,6 +16,7 @@ np.random.seed(71)
 
 class LinearRegression(object):
     """Numpy implementation of Linear Regression."""
+
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         self.batch_size = batch_size
         self.lr = lr
@@ -106,6 +107,7 @@ def reset_tf_graph(seed=71):
 
 class LinearRegressionTF(object):
     """A TensorFlow implementation of Linear Regression."""
+
     def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
         self.batch_size = batch_size
         self.n_epochs = n_epochs
