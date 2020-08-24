@@ -10,6 +10,7 @@ np.random.seed(71)
 
 class LogisticRegression(object):
     """Numpy implementation of Logistic Regression."""
+
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         self.batch_size = batch_size
         self.lr = lr
@@ -131,6 +132,7 @@ def reset_tf_graph(seed=71):
 
 class LogisticRegressionTF(object):
     """A TensorFlow implementation of Logistic Regression."""
+
     def __init__(self, batch_size=64, learning_rate=0.01, n_epochs=1000):
         self.batch_size = batch_size
         self.n_epochs = n_epochs
