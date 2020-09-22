@@ -281,7 +281,6 @@ class LinearRegressionMX(object):
                 l.backward() 
                 self._sgd(w, b)
 
-                # TODO: Refactor fit()'s batch loss and total loss.
                 # batch_loss = loss(net(self.X_train, w, b), self.y_train) 
                 # total_loss += batch_loss
 
@@ -348,7 +347,6 @@ class LinearRegressionMXGluon(object):
                 l.backward()
                 trainer.step(self.batch_size)
 
-                # TODO: Refactor fit()'s batch loss and total loss.
                 # batch_loss = loss(net(self.X_train, w, b), self.y_train)
                 # total_loss += batch_loss
 
