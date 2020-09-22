@@ -6,6 +6,12 @@ from mxnet import nd, autograd
 import random
 
 
+# TODO: Implement softmax regression in NumPy.
+
+
+# TODO: Implement softmax regression in TensorFlow.
+
+
 class SoftmaxRegressionMX(object):
     """MXNet implementation of Softmax Regression."""
     def __init__(self, batch_size=256, lr=0.01, n_epoches=5):
@@ -92,4 +98,10 @@ class SoftmaxRegressionMX(object):
         return self.net(X_test, self.w, self.b).reshape((-1,))
 
 
-# TODO: Implement main() with tests.
+def main():
+    # TODO: Implement main() with tests.
+    pass
+
+
+if __name__ == '__main__':
+    main()
