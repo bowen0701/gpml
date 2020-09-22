@@ -98,6 +98,9 @@ class SoftmaxRegressionMX(object):
         return self.net(X_test, self.w, self.b).reshape((-1,))
 
 
+# TODO: Implement softmax regression in Gluon.
+
+
 def main():
     # TODO: Implement main() with tests.
     pass
