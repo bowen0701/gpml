@@ -98,6 +98,9 @@ class LinearRegression(object):
         return self._model(X).reshape((-1,))
 
 
+# TODO: Implement linear regression in PyTorch.
+
+
 def reset_tf_graph(seed=71):
     """Reset default TensorFlow graph."""
     tf.reset_default_graph()

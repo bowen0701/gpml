@@ -9,6 +9,9 @@ import random
 # TODO: Implement softmax regression in NumPy.
 
 
+# TODO: Implement linear regression in PyTorch.
+
+
 # TODO: Implement softmax regression in TensorFlow.
 
 
