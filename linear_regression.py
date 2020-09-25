@@ -100,7 +100,7 @@ class LinearRegression(object):
 
 # TODO: Continue implementing linear regression in PyTorch.
 class LinearRegressionTorch(object):
-    """Numpy implementation of Linear Regression."""
+    """PyTorch implementation of Linear Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         self.batch_size = batch_size
