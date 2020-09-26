@@ -117,9 +117,11 @@ class LogisticRegression(object):
         return self
 
     def get_coeff(self):
+        """Get model coefficients."""
         return self.b, self.w.reshape((-1,))
 
     def predict(self, X):
+        """Predict for new data."""
         return self._model(X).reshape((-1,))
 
 
@@ -204,9 +206,11 @@ class LogisticRegressionTorch(object):
         pass
 
     def get_coeff(self):
+        """Get model coefficients."""
         pass
 
     def predict(self, X):
+        """Predict for new data."""
         pass
 
 
@@ -319,6 +323,7 @@ class LogisticRegressionTF(object):
             saver.save(sess, 'checkpoints/logreg')
 
     def get_coeff(self):
+        """Get model coefficients."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             # Load model.
@@ -327,6 +332,7 @@ class LogisticRegressionTF(object):
             return self.b.eval(), self.w.eval().reshape((-1,))
 
     def predict(self, X):
+        """Predict for new data."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             # Load model.
