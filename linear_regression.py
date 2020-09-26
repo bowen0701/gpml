@@ -92,9 +92,11 @@ class LinearRegression(object):
         return self
 
     def get_coeff(self):
+        """Get model coefficients."""
         return self.b, self.w.reshape((-1,))
 
     def predict(self, X):
+        """Predict for new data."""
         return self._model(X).reshape((-1,))
 
 
@@ -154,9 +156,11 @@ class LinearRegressionTorch(object):
         pass
 
     def get_coeff(self):
+        """Get model coefficients."""
         pass
 
     def predict(self, X):
+        """Predict for new data."""
         pass
 
 
@@ -259,6 +263,7 @@ class LinearRegressionTF(object):
             saver.save(sess, 'checkpoints/linreg')
 
     def get_coeff(self):
+        """Get model coefficients."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             # Load model.
@@ -267,6 +272,7 @@ class LinearRegressionTF(object):
             return self.b.eval(), self.w.eval().reshape((-1,))
 
     def predict(self, X):
+        """Predict for new data."""
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             # Load model.
@@ -359,9 +365,11 @@ class LinearRegressionMX(object):
         return self
 
     def get_coeff(self):
+        """Get model coefficients."""
         return self.b, self.w.reshape((-1,))
 
     def predict(self, X_test):
+        """Predict for new data."""
         return self.net(X_test, self.w, self.b).reshape((-1,))
 
 
@@ -423,11 +431,13 @@ class LinearRegressionMXGluon(object):
         self.net = net
         return self
 
-    def get_coeff(self): 
+    def get_coeff(self):
+        """Get model coefficients."""
         _coef = self.net[0]
         return _coef.bias.data(), _coef.weight.data().reshape((-1,))
 
     def predict(self, X_test):
+        """Predict for new data."""
         return self.net(X_test).reshape((-1,))
 
 
