@@ -148,13 +148,10 @@ class LogisticRegressionTorch(object):
 
     def _create_weights(self):
         """Create model weights and bias."""
-        # self.w = np.zeros(self.n_inputs).reshape(self.n_inputs, 1)
-        # self.b = np.zeros(1).reshape(1, 1)
         pass
 
     def _logit(self, X):
         """Logit: unnormalized log probability."""
-        # return np.matmul(X, self.w) + self.b
         pass
 
     def _sigmoid(self, logit):
@@ -165,15 +162,10 @@ class LogisticRegressionTorch(object):
                    = exp(z - z_max) / (exp(-z_max) + exp(z - z_max)),
         where z is the logit, and z_max = z - max(0, z).
         """
-        # logit_max = np.maximum(0, logit)
-        # logit_stable = logit - logit_max
-        # return np.exp(logit_stable) / (np.exp(-logit_max) + np.exp(logit_stable))
         pass
 
     def _model(self, X):
         """Logistic regression model."""
-        # logit = self._logit(X)
-        # return self._sigmoid(logit)
         pass
 
     def _loss(self, y, logit):
@@ -193,23 +185,10 @@ class LogisticRegressionTorch(object):
             = log(exp(0) + exp(z) * exp(z_max) / exp(z_max))
             = z_max + log(exp(-z_max) + exp(z - z_max)).
         """
-        # logit_max = np.maximum(0, logit)
-        # logit_stable = logit - logit_max
-        # logsumexp_stable = logit_max + np.log(np.exp(-logit_max) + np.exp(logit_stable))
-        # self.cross_entropy = -(y * (logit - logsumexp_stable) + (1 - y) * (-logsumexp_stable))
-        # return np.mean(self.cross_entropy)
         pass
 
     def _optimize(self, X, y):
         """Optimize by stochastic gradient descent."""
-        # m = X.shape[0]
-
-        # y_ = self._model(X) 
-        # dw = 1 / m * np.matmul(X.T, y_ - y)
-        # db = np.mean(y_ - y)
-
-        # for (param, grad) in zip([self.w, self.b], [dw, db]):
-        #     param[:] = param - self.lr * grad
         pass
 
     def _fetch_batch(self):
@@ -222,29 +201,12 @@ class LogisticRegressionTorch(object):
 
     def fit(self):
         """Fit model."""
-        # self._create_weights()
-
-        # for epoch in range(self.n_epochs):
-        #     total_loss = 0
-        #     for X_train_b, y_train_b in self._fetch_batch():
-        #         y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
-        #         self._optimize(X_train_b, y_train_b)
-        #         train_loss = self._loss(y_train_b, self._logit(X_train_b))
-        #         total_loss += train_loss * X_train_b.shape[0]
-
-        #     if epoch % 100 == 0:
-        #         print('epoch {0}: training loss {1}'
-        #               .format(epoch, total_loss / self.n_examples))
-
-        # return self
         pass
 
     def get_coeff(self):
-        # return self.b, self.w.reshape((-1,))
         pass
 
     def predict(self, X):
-        # return self._model(X).reshape((-1,))
         pass
 
 

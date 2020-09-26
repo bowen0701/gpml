@@ -123,13 +123,10 @@ class LinearRegressionTorch(object):
 
     def _create_weights(self):
         """Create model weights and bias."""
-        # self.w = np.zeros(self.n_inputs).reshape(self.n_inputs, 1)
-        # self.b = np.zeros(1).reshape(1, 1)
         pass
 
     def _model(self, X):
         """Linear regression model."""
-        # return np.matmul(X, self.w) + self.b
         pass
 
     def _loss(self, y, y_):
@@ -138,20 +135,10 @@ class LinearRegressionTorch(object):
         # squared_error_loss(y, y_) 
         #   = - 1/n * \sum_{i=1}^n (y_i - y__i)^2
         """
-        # self.squared_error = np.square(y - y_)
-        # return np.mean(self.squared_error)
         pass
 
     def _optimize(self, X, y):
         """Optimize by stochastic gradient descent."""
-        # m = X.shape[0]
-
-        # y_ = self._model(X) 
-        # dw = 1 / m * np.matmul(X.T, y_ - y)
-        # db = np.mean(y_ - y)
-
-        # for (param, grad) in zip([self.w, self.b], [dw, db]):
-        #     param[:] = param - self.lr * grad
         pass
 
     def _fetch_batch(self):
@@ -164,29 +151,12 @@ class LinearRegressionTorch(object):
 
     def fit(self):
         """Fit model."""
-        # self._create_weights()
-
-        # for epoch in range(self.n_epochs):
-        #     total_loss = 0
-        #     for X_train_b, y_train_b in self._fetch_batch():
-        #         y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
-        #         self._optimize(X_train_b, y_train_b)
-        #         train_loss = self._loss(y_train_b, self._model(X_train_b))
-        #         total_loss += train_loss * X_train_b.shape[0]
-
-        #     if epoch % 100 == 0:
-        #         print('epoch {0}: training loss {1}'
-        #               .format(epoch, total_loss / self.n_examples))
         pass
 
-        return self
-
     def get_coeff(self):
-        # return self.b, self.w.reshape((-1,))
         pass
 
     def predict(self, X):
-        # return self._model(X).reshape((-1,))
         pass
 
 
