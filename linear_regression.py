@@ -5,7 +5,12 @@ from __future__ import print_function
 import random
 import numpy as np
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 import tensorflow as tf
+
 from mxnet import nd, autograd, init, gluon
 from mxnet.gluon import data as gdata
 from mxnet.gluon import nn
@@ -161,7 +166,8 @@ class LinearRegressionTorch(object):
 
     def predict(self, X):
         """Predict for new data."""
-        pass
+        with torch.no_grad():
+            pass
 
 
 def reset_tf_graph(seed=71):
