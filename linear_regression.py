@@ -107,10 +107,11 @@ class LinearRegression(object):
 
 
 # TODO: Continue implementing linear regression in PyTorch.
-class LinearRegressionTorch(object):
+class LinearRegressionTorch(nn.Module):
     """PyTorch implementation of Linear Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
+        super(LinearRegressionTorch, self).__init__()
         self.batch_size = batch_size
         self.lr = lr
         self.n_epochs = n_epochs
@@ -129,25 +130,25 @@ class LinearRegressionTorch(object):
             self.X_train = self.X_train[idx]
             self.y_train = self.y_train[idx]
 
-    def _create_weights(self):
-        """Create model weights and bias."""
-        pass
-
-    def _model(self, X):
+    def _create_model(self):
         """Linear regression model."""
-        pass
+        self.net = nn.Linear(self.n_inputs, 1)
 
-    def _loss(self, y, y_):
+    def forward(self, x):
+        x = self.net(x)
+        return x
+
+    def _create_loss(self):
         """Squared error loss.
 
         # squared_error_loss(y, y_) 
         #   = - 1/n * \sum_{i=1}^n (y_i - y__i)^2
         """
-        pass
+        self.criterion = nn.CrossEntropyLoss()
 
-    def _optimize(self, X, y):
+    def _create_optimizer(self):
         """Optimize by stochastic gradient descent."""
-        pass
+        self.optimizer = optim.SGD(self.net.parametes(), lr=self.lr)
 
     def _fetch_batch(self):
         """Fetch batch dataset."""
