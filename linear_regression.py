@@ -144,7 +144,7 @@ class LinearRegressionTorch(nn.Module):
         # squared_error_loss(y, y_) 
         #   = - 1/n * \sum_{i=1}^n (y_i - y__i)^2
         """
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.MSELoss()
 
     def _create_optimizer(self):
         """Optimize by stochastic gradient descent."""
