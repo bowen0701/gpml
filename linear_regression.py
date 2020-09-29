@@ -135,8 +135,8 @@ class LinearRegressionTorch(nn.Module):
         self.net = nn.Linear(self.n_inputs, 1)
 
     def forward(self, x):
-        x = self.net(x)
-        return x
+        y_red = self.net(x)
+        return y_red
 
     def _create_loss(self):
         """Squared error loss.
@@ -150,6 +150,12 @@ class LinearRegressionTorch(nn.Module):
         """Optimize by stochastic gradient descent."""
         self.optimizer = optim.SGD(self.net.parametes(), lr=self.lr)
 
+    def build_graph(self):
+        """Build computational graph."""
+        self._create_model()
+        self._create_loss()
+        self._create_optimizer()
+
     def _fetch_batch(self):
         """Fetch batch dataset."""
         idx = list(range(self.n_examples))
@@ -160,7 +166,18 @@ class LinearRegressionTorch(nn.Module):
 
     def fit(self):
         """Fit model."""
-        pass
+        for epoch in range(1, self.n_epochs + 1):
+            total_loss = 0
+            for X_train_b, y_train_b in self._fetch_batch():
+                X_train_b, y_train_b = (
+                    torch.from_numpy(X_train_b), torch.from_numpy(y_train_b))
+                y_pred_b = self.net(X_train_b)
+                batch_loss = self.criterion(y_pred_b, y_train_b)
+                total_loss += batch_loss * X_train_b.shape[0]
+
+            if epoch % 100 == 0:
+                print('Epoch {0}: training loss: {1}'
+                      .format(epoch, total_loss / self.n_examples))
 
     def get_coeff(self):
         """Get model coefficients."""
