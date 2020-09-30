@@ -171,9 +171,15 @@ class LinearRegressionTorch(nn.Module):
             for X_train_b, y_train_b in self._fetch_batch():
                 X_train_b, y_train_b = (
                     torch.from_numpy(X_train_b), torch.from_numpy(y_train_b))
+
                 y_pred_b = self.net(X_train_b)
                 batch_loss = self.criterion(y_pred_b, y_train_b)
                 total_loss += batch_loss * X_train_b.shape[0]
+
+                # Zero grads, performs backward pass, and update weights.
+                self.optimizer.zero_grad()
+                self.batch_loss.backward()
+                self.optimizer.step()
 
             if epoch % 100 == 0:
                 print('Epoch {0}: training loss: {1}'
@@ -181,12 +187,12 @@ class LinearRegressionTorch(nn.Module):
 
     def get_coeff(self):
         """Get model coefficients."""
-        pass
+        return self.net.bias.numpy(), self.net.weight.numpy()
 
     def predict(self, X):
         """Predict for new data."""
         with torch.no_grad():
-            pass
+            return self.net(X).numpy().reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
