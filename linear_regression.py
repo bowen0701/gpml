@@ -91,8 +91,8 @@ class LinearRegression(object):
             for X_train_b, y_train_b in self._fetch_batch():
                 y_train_b = y_train_b.reshape((y_train_b.shape[0], -1))
                 self._optimize(X_train_b, y_train_b)
-                train_loss = self._loss(y_train_b, self._model(X_train_b))
-                total_loss += train_loss * X_train_b.shape[0]
+                batch_loss = self._loss(y_train_b, self._model(X_train_b))
+                total_loss += batch_loss * X_train_b.shape[0]
 
             if epoch % 100 == 0:
                 print('epoch {0}: training loss {1}'
