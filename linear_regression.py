@@ -491,19 +491,19 @@ def main():
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
 
-    # Split data into training/test datasets.
-    test_ratio = 0.2
-    test_size = int(data.shape[0] * test_ratio)
-
-    X_train = data[:-test_size]
-    X_test = data[-test_size:]
-    y_train = label[:-test_size]
-    y_test = label[-test_size:]
+    # Split data into training and test datasets.
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=71, shuffle=True)
 
     # Feature engineering for standardizing features by min-max scaler.
     min_max_scaler = MinMaxScaler()
     X_train = min_max_scaler.fit_transform(X_train_raw)
     X_test = min_max_scaler.transform(X_test_raw)
+
+    # Convert arrays to float32.
+    X_train, X_test_raw, y_train, y_test = (
+        np.float32(X_train), np.float32(X_test), 
+        np.float32(y_train), np.float32(y_test))
 
     # Train Numpy linear regression model.
     linreg = LinearRegression(batch_size=64, lr=0.1, n_epochs=1000)
