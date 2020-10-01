@@ -180,7 +180,7 @@ class LinearRegressionTorch(nn.Module):
 
                 # Zero grads, performs backward pass, and update weights.
                 self.optimizer.zero_grad()
-                self.batch_loss.backward()
+                batch_loss.backward()
                 self.optimizer.step()
 
             if epoch % 100 == 0:
