@@ -5,13 +5,16 @@ from __future__ import print_function
 import random
 import numpy as np
 
+# PyTorch imports.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+# TensorFlow import.
 import tensorflow as tf
 
+# MXNet imports.
 from mxnet import nd, autograd, init, gluon
 from mxnet.gluon import data as gdata
 from mxnet.gluon import nn
@@ -106,7 +109,6 @@ class LinearRegression(object):
         return self._model(X).reshape((-1,))
 
 
-# TODO: Continue implementing linear regression in PyTorch.
 class LinearRegressionTorch(nn.Module):
     """PyTorch implementation of Linear Regression."""
 
@@ -148,7 +150,7 @@ class LinearRegressionTorch(nn.Module):
 
     def _create_optimizer(self):
         """Optimize by stochastic gradient descent."""
-        self.optimizer = optim.SGD(self.net.parametes(), lr=self.lr)
+        self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
 
     def build_graph(self):
         """Build computational graph."""
