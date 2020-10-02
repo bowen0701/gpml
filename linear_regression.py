@@ -171,8 +171,10 @@ class LinearRegressionTorch(nn.Module):
         for epoch in range(1, self.n_epochs + 1):
             total_loss = 0
             for X_train_b, y_train_b in self._fetch_batch():
+                # Convert to Tensor from NumPy array and reshape ys.
                 X_train_b, y_train_b = (
-                    torch.from_numpy(X_train_b), torch.from_numpy(y_train_b))
+                    torch.from_numpy(X_train_b), 
+                    torch.from_numpy(y_train_b).view(-1, 1))
 
                 y_pred_b = self.net(X_train_b)
                 batch_loss = self.criterion(y_pred_b, y_train_b)
@@ -189,12 +191,14 @@ class LinearRegressionTorch(nn.Module):
 
     def get_coeff(self):
         """Get model coefficients."""
-        return self.net.bias.numpy(), self.net.weight.numpy()
+        # Detach var which require grad.
+        return self.net.bias.detach().numpy(), self.net.weight.detach().numpy()
 
     def predict(self, X):
         """Predict for new data."""
         with torch.no_grad():
-            return self.net(X).numpy().reshape((-1,))
+            X_ = torch.from_numpy(X)
+            return self.net(X_).numpy().reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
@@ -517,8 +521,22 @@ def main():
     print('Test mean squared error: {}'
            .format(mean_squared_error(y_test, y_test_)))
 
+    # Train PyTorch linear regression model.
+    linreg_torch = LinearRegressionTorch(batch_size=64, lr=0.1, n_epochs=1000)
+    linreg_torch.get_data(X_train, y_train, shuffle=True)
+    linreg_torch.build_graph()
+    linreg_torch.fit()
+    print(linreg_torch.get_coeff())
+    y_train_ = linreg_torch.predict(X_train)
+    print('Training mean squared error: {}'
+           .format(mean_squared_error(y_train, y_train_)))
+    y_test_ = linreg_torch.predict(X_test)
+    print('Test mean squared error: {}'
+           .format(mean_squared_error(y_test, y_test_)))
+
     # Train TensorFlow linear regression model.
-    linreg_tf = LinearRegressionTF(batch_size=64, learning_rate=0.1, n_epochs=1000)
+    linreg_tf = LinearRegressionTF(
+        batch_size=64, learning_rate=0.1, n_epochs=1000)
     linreg_tf.get_data(X_train, y_train, shuffle=True)
     linreg_tf.fit()
     print(linreg_tf.get_coeff())
