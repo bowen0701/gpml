@@ -141,11 +141,7 @@ class LinearRegressionTorch(nn.Module):
         return y_red
 
     def _create_loss(self):
-        """Squared error loss.
-
-        # squared_error_loss(y, y_) 
-        #   = - 1/n * \sum_{i=1}^n (y_i - y__i)^2
-        """
+        """Squared error loss."""
         self.criterion = nn.MSELoss()
 
     def _create_optimizer(self):
