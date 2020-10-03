@@ -15,8 +15,10 @@ import random
 # TODO: Implement softmax regression in TensorFlow.
 
 
+# TODO: Implement softmax regression in MXNet.
 class SoftmaxRegressionMX(object):
     """MXNet implementation of Softmax Regression."""
+
     def __init__(self, batch_size=256, lr=0.01, n_epoches=5):
         self.batch_size = batch_size
         self.lr = lr

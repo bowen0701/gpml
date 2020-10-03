@@ -314,9 +314,10 @@ class LinearRegressionTF(object):
             return self._model(X).eval().reshape((-1,))
 
 
+# TODO: Implement linear regression in MXNet.
 class LinearRegressionMX(object):
     """MXNet implementation of Linear Regression."""
-    # TODO: Implement linear regression in MXNet.
+
     def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
         self.batch_size = batch_size
         self.lr = lr
@@ -406,9 +407,10 @@ class LinearRegressionMX(object):
         return self.net(X_test, self.w, self.b).reshape((-1,))
 
 
+# TODO: Implement linear regression in MXNet Gluon.
 class LinearRegressionMXGluon(object):  
     """MXNet-Gluon implementation of Linear Regression."""
-    # TODO: Implement linear regression in MXNet Gluon.
+
     def __init__(self, batch_size=10, lr=0.01, n_epochs=5):
         self.batch_size = batch_size
         self.lr = lr
