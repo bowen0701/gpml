@@ -137,8 +137,8 @@ class LinearRegressionTorch(nn.Module):
         self.net = nn.Linear(self.n_inputs, 1)
 
     def forward(self, x):
-        y_red = self.net(x)
-        return y_red
+        y = self.net(x)
+        return y
 
     def _create_loss(self):
         """Squared error loss."""
