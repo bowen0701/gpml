@@ -5,6 +5,15 @@ from __future__ import print_function
 import random
 import numpy as np
 
+# PyTorch imports.
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+
+# TensorFlow import.
+import tensorflow as tf
+
 np.random.seed(71)
 
 
@@ -125,11 +134,11 @@ class LogisticRegression(object):
         return self._model(X).reshape((-1,))
 
 
-# TODO: Implement linear regression in PyTorch.
-class LogisticRegressionTorch(object):
+class LogisticRegressionTorch(nn.Module):
     """PyTorch implementation of Logistic Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
+        super(LogisticRegressionTorch, self).__init__()
         self.batch_size = batch_size
         self.lr = lr
         self.n_epochs = n_epochs
@@ -148,29 +157,22 @@ class LogisticRegressionTorch(object):
             self.X_train = self.X_train[idx]
             self.y_train = self.y_train[idx]
 
-    def _create_weights(self):
-        """Create model weights and bias."""
-        pass
+    def _create_model(self):
+        """Create logistic regression model."""
+        x = nn.linear(self.n_inputs, 1)
+        self.net = nn.Sigmoid(x)
 
-    def _logit(self, X):
-        """Logit: unnormalized log probability."""
-        pass
+    def forward(self, x):
+        y = self.net(x)
+        return y
 
-    def _sigmoid(self, logit):
-        """Sigmoid function."""
-        pass
-
-    def _model(self, X):
-        """Logistic regression model."""
-        pass
-
-    def _loss(self, y, logit):
-        """Cross entropy loss."""
-        pass
+    def _create_loss(self):
+        """Create (binary) cross entropy loss."""
+        self.criterion = nn.BCELoss()
 
     def _optimize(self, X, y):
-        """Optimize by stochastic gradient descent."""
-        pass
+        """Create optimizer by stochastic gradient descent."""
+        self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
 
     def _fetch_batch(self):
         """Fetch batch dataset."""
@@ -180,6 +182,7 @@ class LogisticRegressionTorch(object):
             yield (self.X_train.take(idx_batch, axis=0), 
                    self.y_train.take(idx_batch, axis=0))
 
+    # TODO: Implement linear regression in PyTorch.
     def fit(self):
         """Fit model."""
         pass
