@@ -133,19 +133,20 @@ class LinearRegressionTorch(nn.Module):
             self.y_train = self.y_train[idx]
 
     def _create_model(self):
-        """Linear regression model."""
+        """Create linear regression model."""
         self.net = nn.Linear(self.n_inputs, 1)
 
     def forward(self, x):
+        """Foward to output model."""
         y = self.net(x)
         return y
 
     def _create_loss(self):
-        """Squared error loss."""
+        """Create squared error loss."""
         self.criterion = nn.MSELoss()
 
     def _create_optimizer(self):
-        """Optimize by stochastic gradient descent."""
+        """Create optimizer by stochastic gradient descent."""
         self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
 
     def build_graph(self):
