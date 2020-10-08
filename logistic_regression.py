@@ -170,9 +170,15 @@ class LogisticRegressionTorch(nn.Module):
         """Create (binary) cross entropy loss."""
         self.criterion = nn.BCELoss()
 
-    def _optimize(self, X, y):
+    def _create_optimizer(self):
         """Create optimizer by stochastic gradient descent."""
         self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
+
+    def build_graph(self):
+        """Build computational graph."""
+        self._create_model()
+        self._create_loss()
+        self._create_optimizer()
 
     def _fetch_batch(self):
         """Fetch batch dataset."""
@@ -185,15 +191,37 @@ class LogisticRegressionTorch(nn.Module):
     # TODO: Implement linear regression in PyTorch.
     def fit(self):
         """Fit model."""
-        pass
+        for epoch in range(1, self.n_epochs + 1):
+            total_loss = 0
+            for X_train_b, y_train_b in self._fetch_batch():
+                # Convert to Tensor from NumPy array and reshape ys.
+                X_train_b, y_train_b = (
+                    torch.from_numpy(X_train_b), 
+                    torch.from_numpy(y_train_b).view(-1, 1))
+
+                y_pred_b = self.net(X_train_b)
+                batch_loss = self.criterion(y_pred_b, y_train_b)
+                total_loss += batch_loss * X_train_b.shape[0]
+
+                # Zero grads, performs backward pass, and update weights.
+                self.optimizer.zero_grad()
+                batch_loss.backward()
+                self.optimizer.step()
+
+            if epoch % 100 == 0:
+                print('Epoch {0}: training loss: {1}'
+                      .format(epoch, total_loss / self.n_examples))
 
     def get_coeff(self):
         """Get model coefficients."""
-        pass
+        # Detach var which require grad.
+        return self.net.bias.detach().numpy(), self.net.weight.detach().numpy()
 
     def predict(self, X):
         """Predict for new data."""
-        pass
+        with torch.no_grad():
+            X_ = torch.from_numpy(X)
+            return self.net(X_).numpy().reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
