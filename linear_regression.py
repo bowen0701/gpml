@@ -505,9 +505,10 @@ def main():
     X_test = min_max_scaler.transform(X_test_raw)
 
     # Convert arrays to float32.
-    X_train, X_test_raw, y_train, y_test = (
+    X_train, X_test, y_train, y_test = (
         np.float32(X_train), np.float32(X_test), 
-        np.float32(y_train), np.float32(y_test))
+        np.float32(y_train), np.float32(y_test)
+    )
 
     # Train Numpy linear regression model.
     linreg = LinearRegression(batch_size=64, lr=0.1, n_epochs=1000)
