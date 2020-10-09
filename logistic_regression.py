@@ -188,7 +188,6 @@ class LogisticRegressionTorch(nn.Module):
             yield (self.X_train.take(idx_batch, axis=0), 
                    self.y_train.take(idx_batch, axis=0))
 
-    # TODO: Implement linear regression in PyTorch.
     def fit(self):
         """Fit model."""
         for epoch in range(1, self.n_epochs + 1):
