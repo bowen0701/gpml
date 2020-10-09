@@ -134,11 +134,11 @@ class LinearRegressionTorch(nn.Module):
 
     def _create_model(self):
         """Create linear regression model."""
-        self.net = nn.Linear(self.n_inputs, 1)
+        self.model = nn.Linear(self.n_inputs, 1)
 
     def forward(self, x):
         """Foward to output model."""
-        y = self.net(x)
+        y = self.model(x)
         return y
 
     def _create_loss(self):
@@ -147,7 +147,7 @@ class LinearRegressionTorch(nn.Module):
 
     def _create_optimizer(self):
         """Create optimizer by stochastic gradient descent."""
-        self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
 
     def build_graph(self):
         """Build computational graph."""
@@ -173,7 +173,7 @@ class LinearRegressionTorch(nn.Module):
                     torch.from_numpy(X_train_b), 
                     torch.from_numpy(y_train_b).view(-1, 1))
 
-                y_pred_b = self.net(X_train_b)
+                y_pred_b = self.model(X_train_b)
                 batch_loss = self.criterion(y_pred_b, y_train_b)
                 total_loss += batch_loss * X_train_b.shape[0]
 
@@ -189,13 +189,14 @@ class LinearRegressionTorch(nn.Module):
     def get_coeff(self):
         """Get model coefficients."""
         # Detach var which require grad.
-        return self.net.bias.detach().numpy(), self.net.weight.detach().numpy()
+        return (self.model.bias.detach().numpy(),
+                self.model.weight.detach().numpy())
 
     def predict(self, X):
         """Predict for new data."""
         with torch.no_grad():
             X_ = torch.from_numpy(X)
-            return self.net(X_).numpy().reshape((-1,))
+            return self.model(X_).numpy().reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
