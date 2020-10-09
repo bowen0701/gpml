@@ -159,11 +159,13 @@ class LogisticRegressionTorch(nn.Module):
 
     def _create_model(self):
         """Create logistic regression model."""
-        x = nn.linear(self.n_inputs, 1)
-        self.net = nn.Sigmoid(x)
+        self.model = nn.Sequential(
+            nn.Linear(self.n_inputs, 1),
+            nn.Sigmoid(),
+        )
 
     def forward(self, x):
-        y = self.net(x)
+        y = self.model(x)
         return y
 
     def _create_loss(self):
@@ -172,7 +174,7 @@ class LogisticRegressionTorch(nn.Module):
 
     def _create_optimizer(self):
         """Create optimizer by stochastic gradient descent."""
-        self.optimizer = optim.SGD(self.net.parameters(), lr=self.lr)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
 
     def build_graph(self):
         """Build computational graph."""
@@ -198,7 +200,7 @@ class LogisticRegressionTorch(nn.Module):
                     torch.from_numpy(X_train_b), 
                     torch.from_numpy(y_train_b).view(-1, 1))
 
-                y_pred_b = self.net(X_train_b)
+                y_pred_b = self.model(X_train_b)
                 batch_loss = self.criterion(y_pred_b, y_train_b)
                 total_loss += batch_loss * X_train_b.shape[0]
 
@@ -214,13 +216,14 @@ class LogisticRegressionTorch(nn.Module):
     def get_coeff(self):
         """Get model coefficients."""
         # Detach var which require grad.
-        return self.net.bias.detach().numpy(), self.net.weight.detach().numpy()
+        return (self.model[0].bias.detach().numpy(),
+                self.model[0].weight.detach().numpy())
 
     def predict(self, X):
         """Predict for new data."""
         with torch.no_grad():
             X_ = torch.from_numpy(X)
-            return self.net(X_).numpy().reshape((-1,))
+            return self.model(X_).numpy().reshape((-1,))
 
 
 def reset_tf_graph(seed=71):
@@ -386,9 +389,15 @@ def main():
     X_train = min_max_scaler.fit_transform(X_train_raw)
     X_test = min_max_scaler.transform(X_test_raw)
 
+    # Convert arrays to float32.
+    X_train, X_test, y_train, y_test = (
+        np.float32(X_train), np.float32(X_test), 
+        np.float32(y_train), np.float32(y_test)
+    )
+
     # Train Numpy logistic regression model.
     print("Fit logreg in NumPy.")
-    logreg = LogisticRegression(batch_size=64, lr=1, n_epochs=1000)
+    logreg = LogisticRegression(batch_size=64, lr=0.5, n_epochs=1000)
     logreg.get_data(X_train, y_train, shuffle=True)
     logreg.fit()
 
@@ -399,11 +408,24 @@ def main():
     y_pred_test = (p_pred_test > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
+    # Train PyTorch logistic regression model.
+    print("Fit logreg in PyTorch.")
+    logreg_torch = LogisticRegressionTorch(batch_size=64, lr=0.5, n_epochs=1000)
+    logreg_torch.get_data(X_train, y_train, shuffle=True)
+    logreg_torch.fit()
+
+    p_pred_train = logreg_torch.predict(X_train)
+    y_pred_train = (p_pred_train > 0.5) * 1
+    print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
+    p_pred_test = logreg_torch.predict(X_test)
+    y_pred_test = (p_pred_test > 0.5) * 1
+    print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
+
     # Train TensorFlow linear regression model.
     print("Fit logreg in TensorFlow.")
     reset_tf_graph()
     logreg_tf = LogisticRegressionTF(
-        batch_size=64, learning_rate=1, n_epochs=1000)
+        batch_size=64, learning_rate=0.5, n_epochs=1000)
     logreg_tf.get_data(X_train, y_train, shuffle=True)
     logreg_tf.build_graph()
     logreg_tf.fit()
