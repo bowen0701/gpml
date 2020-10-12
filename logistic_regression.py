@@ -353,12 +353,6 @@ class LogisticRegressionTF(object):
             return self._model(X).eval().reshape((-1,))
 
 
-# TODO: Implement logistic regression in MXNet.
-
-
-# TODO: Implement logistic regression in Gluon.
-
-
 def main():
     import sklearn
     from sklearn.datasets import load_breast_cancer
