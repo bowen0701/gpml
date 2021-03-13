@@ -18,7 +18,7 @@ class LinearRegression(nn.Module):
     """PyTorch implementation of Linear Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
-        super(LinearRegressionTorch, self).__init__()
+        super(LinearRegression, self).__init__()
         self.batch_size = batch_size
         self.lr = lr
         self.n_epochs = n_epochs
