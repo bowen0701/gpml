@@ -5,15 +5,6 @@ from __future__ import print_function
 import random
 import numpy as np
 
-# PyTorch imports.
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-
-# TensorFlow import.
-import tensorflow as tf
-
 np.random.seed(71)
 
 
@@ -137,12 +128,6 @@ class SoftmaxRegression(object):
     def predict(self, X):
         """Predict for new data."""
         return self._model(X).reshape((-1,))
-
-
-# TODO: Implement softmax regression in PyTorch.
-
-
-# TODO: Implement softmax regression in TensorFlow.
 
 
 def main():
