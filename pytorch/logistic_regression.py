@@ -5,7 +5,6 @@ from __future__ import print_function
 import random
 import numpy as np
 
-# PyTorch imports.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
