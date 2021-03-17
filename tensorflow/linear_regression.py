@@ -5,7 +5,6 @@ from __future__ import print_function
 import random
 import numpy as np
 
-# TensorFlow import.
 import tensorflow as tf
 
 np.random.seed(71)
