@@ -14,7 +14,7 @@ np.random.seed(71)
 
 
 class LogisticRegression(nn.Module):
-    """PyTorch implementation of Logistic Regression."""
+    """PyTorch implementation of Linear Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         super(LogisticRegression, self).__init__()
@@ -53,10 +53,10 @@ class LogisticRegression(nn.Module):
 
     def _create_optimizer(self):
         """Create optimizer by stochastic gradient descent."""
-        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
+        self.optimizer = optim.SGD(self.parameters(), lr=self.lr)
 
-    def build_graph(self):
-        """Build computational graph."""
+    def build(self):
+        """Build model, loss function and optimizer."""
         self._create_model()
         self._create_loss()
         self._create_optimizer()
@@ -111,24 +111,18 @@ def main():
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.linear_model import LogisticRegression as LogisticRegressionSklearn
+
+    import sys
+    sys.path.append('../numpy/')
     from metrics import accuracy
 
     breast_cancer = load_breast_cancer()
-    data = breast_cancer.data
-    label = breast_cancer.target.reshape(-1, 1)
+    X = breast_cancer.data
+    y = breast_cancer.target.reshape(-1, 1)
 
-    # Normalize features first.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
-
-    # Split data into training/test data.
-    test_ratio = 0.2
-    test_size = int(data.shape[0] * test_ratio)
-
-    X_train = data[:-test_size]
-    X_test = data[-test_size:]
-    y_train = label[:-test_size]
-    y_test = label[-test_size:]
+    # Split data into training and test datasets.
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=71, shuffle=True, stratify=y)
 
     # Feature engineering for standardizing features by min-max scaler.
     min_max_scaler = MinMaxScaler()
@@ -142,9 +136,10 @@ def main():
     )
 
     # Train PyTorch logistic regression model.
-    print("Fit logreg in PyTorch.")
+    print('Train PyTorch logistic regression:')
     logreg_torch = LogisticRegression(batch_size=64, lr=0.5, n_epochs=1000)
     logreg_torch.get_data(X_train, y_train, shuffle=True)
+    logreg_torch.build()
     logreg_torch.fit()
 
     p_pred_train = logreg_torch.predict(X_train)
@@ -154,10 +149,10 @@ def main():
     y_pred_test = (p_pred_test > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
-    # Benchmark with sklearn's Logistic Regression.
-    print('Benchmark with logreg in Scikit-Learn.')
+    # Benchmark with Sklearn's Logistic Regression.
+    print('Train Sklearn logistic regression:')
     logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
-    logreg_sk.fit(X_train, y_train)
+    logreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
 
     p_train_ = logreg_sk.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
