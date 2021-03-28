@@ -100,16 +100,15 @@ def main():
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.linear_model import LinearRegression as LinearRegressionSklearn
+
+    import sys
+    sys.path.append('../numpy/')
     from metrics import mean_squared_error
 
     # Read California housing data.
     housing = fetch_california_housing()
-    data = housing.data
-    label = housing.target
-
-    # Normalize features first.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
+    X = housing.data
+    y = housing.target
 
     # Split data into training and test datasets.
     X_train_raw, X_test_raw, y_train, y_test = train_test_split(
