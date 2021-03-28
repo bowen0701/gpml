@@ -38,11 +38,11 @@ class LinearRegression(nn.Module):
 
     def _create_model(self):
         """Create linear regression model."""
-        self.model = nn.Linear(self.n_inputs, 1)
+        self.fc = nn.Linear(self.n_inputs, 1)
 
     def forward(self, x):
         """Foward to output model."""
-        y = self.model(x)
+        y = self.fc(x)
         return y
 
     def _create_loss(self):
@@ -51,10 +51,10 @@ class LinearRegression(nn.Module):
 
     def _create_optimizer(self):
         """Create optimizer by stochastic gradient descent."""
-        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
+        self.optimizer = optim.SGD(self.parameters(), lr=self.lr)
 
-    def build_graph(self):
-        """Build computational graph."""
+    def build(self):
+        """Build model, loss function and optimizer."""
         self._create_model()
         self._create_loss()
         self._create_optimizer()
@@ -77,7 +77,7 @@ class LinearRegression(nn.Module):
                     torch.from_numpy(X_train_b), 
                     torch.from_numpy(y_train_b).view(-1, 1))
 
-                y_pred_b = self.model(X_train_b)
+                y_pred_b = self.forward(X_train_b)
                 batch_loss = self.criterion(y_pred_b, y_train_b)
                 total_loss += batch_loss * X_train_b.shape[0]
 
@@ -93,14 +93,14 @@ class LinearRegression(nn.Module):
     def get_coeff(self):
         """Get model coefficients."""
         # Detach var which require grad.
-        return (self.model.bias.detach().numpy(),
-                self.model.weight.detach().numpy())
+        return (self.fc.bias.detach().numpy(),
+                self.fc.weight.detach().numpy())
 
     def predict(self, X):
         """Predict for new data."""
         with torch.no_grad():
             X_ = torch.from_numpy(X)
-            return self.model(X_).numpy().reshape((-1,))
+            return self.forward(X_).numpy().reshape((-1,))
 
 
 def main():
@@ -109,16 +109,15 @@ def main():
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.linear_model import LinearRegression as LinearRegressionSklearn
+
+    import sys
+    sys.path.append('../numpy/')
     from metrics import mean_squared_error
 
     # Read California housing data.
     housing = fetch_california_housing()
-    data = housing.data
-    label = housing.target
-
-    # Normalize features first.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
+    X = housing.data
+    y = housing.target
 
     # Split data into training and test datasets.
     X_train_raw, X_test_raw, y_train, y_test = train_test_split(
@@ -136,10 +135,12 @@ def main():
     )
 
     # Train PyTorch linear regression model.
+    print('Train PyTorch linear regression:')
     linreg_torch = LinearRegression(batch_size=64, lr=0.1, n_epochs=1000)
     linreg_torch.get_data(X_train, y_train, shuffle=True)
-    linreg_torch.build_graph()
+    linreg_torch.build()
     linreg_torch.fit()
+
     print(linreg_torch.get_coeff())
     y_train_ = linreg_torch.predict(X_train)
     print('Training mean squared error: {}'
@@ -148,7 +149,8 @@ def main():
     print('Test mean squared error: {}'
            .format(mean_squared_error(y_test, y_test_)))
 
-    # Benchmark with sklearn's linear regression model.
+    # Benchmark with Sklearn's linear regression model.
+    print('Train Sklearn linear regression:')
     linreg_sk = LinearRegressionSklearn()
     linreg_sk.fit(X_train, y_train) 
     y_train_ = linreg_sk.predict(X_train)
