@@ -98,10 +98,9 @@ class LogisticRegression(object):
 
     def fit(self):
         """Fit model."""
-        saver = tf.train.Saver()
-
         with tf.Session() as sess:            
             sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver()
 
             for epoch in range(1, self.n_epochs + 1):
                 total_loss = 0
@@ -143,24 +142,18 @@ def main():
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.linear_model import LogisticRegression as LogisticRegressionSklearn
+
+    import sys
+    sys.path.append('./numpy/')
     from metrics import accuracy
 
     breast_cancer = load_breast_cancer()
-    data = breast_cancer.data
-    label = breast_cancer.target.reshape(-1, 1)
+    X = breast_cancer.data
+    y = breast_cancer.target.reshape(-1, 1)
 
-    # Normalize features first.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
-
-    # Split data into training/test data.
-    test_ratio = 0.2
-    test_size = int(data.shape[0] * test_ratio)
-
-    X_train = data[:-test_size]
-    X_test = data[-test_size:]
-    y_train = label[:-test_size]
-    y_test = label[-test_size:]
+    # Split data into training and test datasets.
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=71, shuffle=True)
 
     # Feature engineering for standardizing features by min-max scaler.
     min_max_scaler = MinMaxScaler()
@@ -174,7 +167,7 @@ def main():
     )
 
     # Train TensorFlow linear regression model.
-    print("Fit logreg in TensorFlow.")
+    print("Train TensorFlow linear regression:")
     reset_tf_graph()
     logreg_tf = LogisticRegression(
         batch_size=64, learning_rate=0.5, n_epochs=1000)
@@ -184,15 +177,15 @@ def main():
 
     p_train_ = logreg_tf.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
+    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
     p_test_ = logreg_tf.predict(X_test)
     y_test_ = (p_test_ > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
+    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
 
-    # Benchmark with sklearn's Logistic Regression.
-    print('Benchmark with logreg in Scikit-Learn.')
+    # Benchmark with Sklearn Logistic Regression.
+    print("Train Sklearn linear regression:")
     logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
-    logreg_sk.fit(X_train, y_train)
+    logreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
 
     p_train_ = logreg_sk.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
