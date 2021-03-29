@@ -88,10 +88,9 @@ class LinearRegression(object):
 
     def fit(self):
         """Fit model."""
-        saver = tf.train.Saver()
-
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
+            saver = tf.train.Saver()
 
             for epoch in range(1, self.n_epochs + 1):
                 total_loss = 0
@@ -133,16 +132,15 @@ def main():
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.linear_model import LinearRegression as LinearRegressionSklearn
+
+    import sys
+    sys.path.append('./numpy/')
     from metrics import mean_squared_error
 
     # Read California housing data.
     housing = fetch_california_housing()
-    data = housing.data
-    label = housing.target
-
-    # Normalize features first.
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
+    X = housing.data
+    y = housing.target
 
     # Split data into training and test datasets.
     X_train_raw, X_test_raw, y_train, y_test = train_test_split(
@@ -160,9 +158,12 @@ def main():
     )
 
     # Train TensorFlow linear regression model.
+    print("Train TensorFlow linear regression:")
     linreg_tf = LinearRegression(batch_size=64, learning_rate=0.1, n_epochs=1000)
     linreg_tf.get_data(X_train, y_train, shuffle=True)
+    linreg_tf.build_graph()
     linreg_tf.fit()
+
     print(linreg_tf.get_coeff())
     y_train_ = linreg_tf.predict(X_train)
     print('Training mean squared error: {}'
@@ -171,9 +172,10 @@ def main():
     print('Test mean squared error: {}'
            .format(mean_squared_error(y_test, y_test_)))
 
-    # Benchmark with sklearn's linear regression model.
+    # Benchmark with Sklearn linear regression model.
+    print("Train Sklearn linear regression:")
     linreg_sk = LinearRegressionSklearn()
-    linreg_sk.fit(X_train, y_train) 
+    linreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], )) 
     y_train_ = linreg_sk.predict(X_train)
     print('Training mean squared error: {}'
            .format(mean_squared_error(y_train, y_train_)))
