@@ -36,16 +36,22 @@ class PerceptronClassifier(object):
         self.b = np.zeros(1).reshape(1, 1)
 
     def _model(self, X):
-        """Perceptron linear regression model."""
-        return np.sign(np.matmul(X, self.w) + self.b)
+        """Perceptron linear regression model.
+        
+        y = sign(Xw + b), where 
+        - y = 1 if Xw + b > 0
+        - y = -1 if Xw + b < 0
+        """
+        self.weighted_sum = np.matmul(X, self.w) + self.b
+        return np.sign(self.weighted_sum)
 
     def _loss(self, y, y_):
         """Hinge loss.
 
         # hinge_loss(y, y_) 
-        #   = 1/n * \sum_{i=1}^n (y_i = y__i)
+        #   = 1/n * \sum_{i=1}^n (y_i * (Xw + b)) (y_i != y__i)
         """
-        self.hinge_loss = np.equal(y, y_)
+        self.hinge_loss = y * self.weighted_sum * self.is_mismatch
         return np.mean(self.hinge_loss)
 
     def _optimize(self, X, y):
@@ -53,9 +59,9 @@ class PerceptronClassifier(object):
         m = X.shape[0]
 
         y_ = self._model(X)
-        is_mismatch = np.not_equal(y, y_)
-        dw = 1 / m * np.matmul(X.T, is_mismatch * y)
-        db = np.mean(is_mismatch)
+        self.is_mismatch = np.not_equal(y, y_)
+        dw = 1 / m * np.matmul(X.T, self.is_mismatch * y)
+        db = np.mean(self.is_mismatch)
 
         for (param, grad) in zip([self.w, self.b], [dw, db]):
             param[:] = param + self.lr * grad
@@ -126,7 +132,7 @@ def main():
     )
 
     # Fit Perceptron Classfier.
-    perceptron = PerceptronClassifier(batch_size=64, lr=0.1, n_epochs=1000)
+    perceptron = PerceptronClassifier(batch_size=64, lr=0.01, n_epochs=1000)
     # Get datasets and build graph.
     perceptron.get_data(X_train, y_train, shuffle=True)
     perceptron.fit()
