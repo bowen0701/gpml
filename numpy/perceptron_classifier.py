@@ -48,8 +48,8 @@ class PerceptronClassifier(object):
     def _loss(self, y, y_):
         """Hinge loss.
 
-        # hinge_loss(y, y_) 
-        #   = 1/n * \sum_{i=1}^n (y_i * (Xw + b)) (y_i != y__i)
+        hinge_loss(y, y_) 
+          = 1/n * \sum_{i=1}^n (y_i * (Xw + b)) (y_i != y__i)
         """
         self.hinge_loss = y * self.weighted_sum * self.is_mismatch
         return np.mean(self.hinge_loss)
