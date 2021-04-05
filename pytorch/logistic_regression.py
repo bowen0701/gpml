@@ -80,12 +80,12 @@ class LogisticRegression(nn.Module):
                     torch.from_numpy(y_train_b).view(-1, 1))
 
                 y_pred_b = self.model(X_train_b)
-                batch_loss = self.criterion(y_pred_b, y_train_b)
-                total_loss += batch_loss * X_train_b.shape[0]
+                loss = self.criterion(y_pred_b, y_train_b)
+                total_loss += loss * X_train_b.shape[0]
 
                 # Zero grads, performs backward pass, and update weights.
                 self.optimizer.zero_grad()
-                batch_loss.backward()
+                loss.backward()
                 self.optimizer.step()
 
             if epoch % 100 == 0:
@@ -113,7 +113,7 @@ def main():
     from sklearn.linear_model import LogisticRegression as LogisticRegressionSklearn
 
     import sys
-    sys.path.append('../numpy/')
+    sys.path.append('./numpy/')
     from metrics import accuracy
 
     breast_cancer = load_breast_cancer()
@@ -136,7 +136,7 @@ def main():
     )
 
     # Train PyTorch logistic regression model.
-    print('Train PyTorch logistic regression:')
+    print("Fit logreg in PyTorch.")
     logreg_torch = LogisticRegression(batch_size=64, lr=0.5, n_epochs=1000)
     logreg_torch.get_data(X_train, y_train, shuffle=True)
     logreg_torch.build()
@@ -149,8 +149,8 @@ def main():
     y_pred_test = (p_pred_test > 0.5) * 1
     print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
 
-    # Benchmark with Sklearn's Logistic Regression.
-    print('Train Sklearn logistic regression:')
+    # Benchmark with sklearn's Logistic Regression.
+    print('Benchmark with logreg in Scikit-Learn.')
     logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
     logreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
 
