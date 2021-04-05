@@ -45,7 +45,7 @@ class SoftmaxRegression(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(-1, 1)
+        x = x.view(x.shape[0], -1)
         y = self.net(x)
         return y
 
