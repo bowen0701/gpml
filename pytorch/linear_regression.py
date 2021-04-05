@@ -78,12 +78,12 @@ class LinearRegression(nn.Module):
                     torch.from_numpy(y_train_b).view(-1, 1))
 
                 y_pred_b = self.forward(X_train_b)
-                batch_loss = self.criterion(y_pred_b, y_train_b)
-                total_loss += batch_loss * X_train_b.shape[0]
+                loss = self.criterion(y_pred_b, y_train_b)
+                total_loss += loss * X_train_b.shape[0]
 
                 # Zero grads, performs backward pass, and update weights.
                 self.optimizer.zero_grad()
-                batch_loss.backward()
+                loss.backward()
                 self.optimizer.step()
 
             if epoch % 100 == 0:
@@ -111,7 +111,8 @@ def main():
     from sklearn.linear_model import LinearRegression as LinearRegressionSklearn
 
     import sys
-    sys.path.append('../numpy/')
+    sys.path.append('./numpy/')
+    print(sys.path)
     from metrics import mean_squared_error
 
     # Read California housing data.
