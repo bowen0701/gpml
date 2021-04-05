@@ -177,10 +177,10 @@ def main():
 
     p_train_ = logreg_tf.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
+    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
     p_test_ = logreg_tf.predict(X_test)
     y_test_ = (p_test_ > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
+    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
 
     # Benchmark with Sklearn Logistic Regression.
     print("Train Sklearn linear regression:")
@@ -189,10 +189,10 @@ def main():
 
     p_train_ = logreg_sk.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
+    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
     p_test_ = logreg_sk.predict(X_test)
     y_test_ = (p_test_ > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
+    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
 
 
 if __name__ == '__main__':

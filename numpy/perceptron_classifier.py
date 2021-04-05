@@ -141,10 +141,10 @@ def main():
     # Predicted probabilities for training data.
     y_train_ = perceptron.predict(X_train)
     print('Training accuracy: {}'
-           .format(accuracy(y_train, y_train_)))
+           .format(accuracy(y_train_, y_train)))
     y_test_ = perceptron.predict(X_test)
     print('Test accuracy: {}'
-           .format(accuracy(y_test, y_test_)))
+           .format(accuracy(y_test_, y_test)))
 
     # Benchmark with Sklearn's Perceptron.
     print('Train Sklearn Perceptron:')
@@ -152,9 +152,9 @@ def main():
     perceptron_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
 
     y_train_ = perceptron_sk.predict(X_train)
-    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
+    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
     y_test_ = perceptron_sk.predict(X_test)
-    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
+    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
 
 
 if __name__ == '__main__':

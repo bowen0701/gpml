@@ -142,12 +142,12 @@ def main():
     logreg_torch.build()
     logreg_torch.fit()
 
-    p_pred_train = logreg_torch.predict(X_train)
-    y_pred_train = (p_pred_train > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_pred_train)))
-    p_pred_test = logreg_torch.predict(X_test)
-    y_pred_test = (p_pred_test > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_pred_test)))
+    p_train_ = logreg_torch.predict(X_train)
+    y_train_ = (p_train_ > 0.5) * 1
+    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
+    p_test_ = logreg_torch.predict(X_test)
+    y_test_ = (p_test_ > 0.5) * 1
+    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
 
     # Benchmark with sklearn's Logistic Regression.
     print('Benchmark with logreg in Scikit-Learn.')
@@ -156,10 +156,10 @@ def main():
 
     p_train_ = logreg_sk.predict(X_train)
     y_train_ = (p_train_ > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train, y_train_)))
+    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
     p_test_ = logreg_sk.predict(X_test)
     y_test_ = (p_test_ > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test, y_test_)))
+    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
 
 
 if __name__ == '__main__':

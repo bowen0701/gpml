@@ -167,10 +167,10 @@ def main():
     print(linreg_tf.get_coeff())
     y_train_ = linreg_tf.predict(X_train)
     print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train, y_train_)))
+           .format(mean_squared_error(y_train_, y_train)))
     y_test_ = linreg_tf.predict(X_test)
     print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test, y_test_)))
+           .format(mean_squared_error(y_test_, y_test)))
 
     # Benchmark with Sklearn linear regression model.
     print("Train Sklearn linear regression:")
@@ -178,10 +178,10 @@ def main():
     linreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], )) 
     y_train_ = linreg_sk.predict(X_train)
     print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train, y_train_)))
+           .format(mean_squared_error(y_train_, y_train)))
     y_test_ = linreg_sk.predict(X_test)
     print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test, y_test_)))
+           .format(mean_squared_error(y_test_, y_test)))
 
 
 if __name__ == '__main__':
