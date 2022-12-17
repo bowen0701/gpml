@@ -5,10 +5,8 @@ from __future__ import print_function
 import random
 import numpy as np
 
-np.random.seed(71)
 
-
-class PerceptronClassifier(object):
+class PerceptronClassifier:
     """Numpy implementation of Perceptron."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
@@ -99,63 +97,3 @@ class PerceptronClassifier(object):
     def predict(self, X):
         """Predict for new data."""
         return self._model(X).reshape((-1,))
-
-
-def main():
-    import sklearn
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import MinMaxScaler
-    from sklearn.linear_model import Perceptron as PerceptronSklearn
-
-    import sys
-    sys.path.append('../numpy/')
-    from metrics import accuracy
-
-    # Read breast cancer data.
-    X, y = load_breast_cancer(return_X_y=True)
-    y = y * 2 - 1
-
-    # Split data into training and test datasets.
-    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=71, shuffle=True)
-
-    # Feature engineering for standardizing features by min-max scaler.
-    min_max_scaler = MinMaxScaler()
-    X_train = min_max_scaler.fit_transform(X_train_raw)
-    X_test = min_max_scaler.transform(X_test_raw)
-
-    # Convert arrays to float32.
-    X_train, X_test, y_train, y_test = (
-        np.float32(X_train), np.float32(X_test), 
-        np.float32(y_train), np.float32(y_test)
-    )
-
-    # Fit Perceptron Classfier.
-    perceptron = PerceptronClassifier(batch_size=64, lr=0.01, n_epochs=1000)
-    # Get datasets and build graph.
-    perceptron.get_data(X_train, y_train, shuffle=True)
-    perceptron.fit()
-
-    print(perceptron.get_coeff())
-    # Predicted probabilities for training data.
-    y_train_ = perceptron.predict(X_train)
-    print('Training accuracy: {}'
-           .format(accuracy(y_train_, y_train)))
-    y_test_ = perceptron.predict(X_test)
-    print('Test accuracy: {}'
-           .format(accuracy(y_test_, y_test)))
-
-    # Benchmark with Sklearn's Perceptron.
-    print('Train Sklearn Perceptron:')
-    perceptron_sk = PerceptronSklearn(max_iter=1000)
-    perceptron_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
-
-    y_train_ = perceptron_sk.predict(X_train)
-    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
-    y_test_ = perceptron_sk.predict(X_test)
-    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
-
-
-if __name__ == '__main__':
-    main()

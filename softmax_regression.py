@@ -5,12 +5,9 @@ from __future__ import print_function
 import random
 import numpy as np
 
-np.random.seed(71)
 
-
-# TODO: Implement softmax regression in NumPy.
-class SoftmaxRegression(object):
-    """Numpy implementation of Softmax Regression."""
+class SoftmaxRegression:
+    """TODO: Numpy implementation of Softmax Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
         self.batch_size = batch_size
@@ -128,12 +125,3 @@ class SoftmaxRegression(object):
     def predict(self, X):
         """Predict for new data."""
         return self._model(X).reshape((-1,))
-
-
-def main():
-    # TODO: Implement main() for training & testing.
-    pass
-
-
-if __name__ == '__main__':
-    main()
