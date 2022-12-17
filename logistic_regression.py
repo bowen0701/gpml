@@ -5,10 +5,8 @@ from __future__ import print_function
 import random
 import numpy as np
 
-np.random.seed(71)
 
-
-class LogisticRegression(object):
+class LogisticRegression:
     """Numpy implementation of Logistic Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
@@ -123,63 +121,3 @@ class LogisticRegression(object):
     def predict(self, X):
         """Predict for new data."""
         return self._model(X).reshape((-1,))
-
-
-def main():
-    import sklearn
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import MinMaxScaler
-    from sklearn.linear_model import LogisticRegression as LogisticRegressionSklearn
-
-    import sys
-    sys.path.append('../numpy/')
-    from metrics import accuracy
-
-    breast_cancer = load_breast_cancer()
-    X = breast_cancer.data
-    y = breast_cancer.target.reshape(-1, 1)
-
-    # Split data into training and test datasets.
-    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=71, shuffle=True)
-
-    # Feature engineering for standardizing features by min-max scaler.
-    min_max_scaler = MinMaxScaler()
-    X_train = min_max_scaler.fit_transform(X_train_raw)
-    X_test = min_max_scaler.transform(X_test_raw)
-
-    # Convert arrays to float32.
-    X_train, X_test, y_train, y_test = (
-        np.float32(X_train), np.float32(X_test), 
-        np.float32(y_train), np.float32(y_test)
-    )
-
-    # Train Numpy logistic regression model.
-    print("Fit logreg in NumPy.")
-    logreg = LogisticRegression(batch_size=64, lr=0.5, n_epochs=1000)
-    logreg.get_data(X_train, y_train, shuffle=True)
-    logreg.fit()
-
-    p_train_ = logreg.predict(X_train)
-    y_train_ = (p_train > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
-    p_test_ = logreg.predict(X_test)
-    y_test_ = (p_test > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
-
-    # Train Sklearn logistic regression model.
-    print('Benchmark with logreg in Scikit-Learn.')
-    logreg_sk = LogisticRegressionSklearn(C=1e4, solver='lbfgs', max_iter=500)
-    logreg_sk.fit(X_train, y_train.reshape(y_train.shape[0], ))
-
-    p_train_ = logreg_sk.predict(X_train)
-    y_train_ = (p_train_ > 0.5) * 1
-    print('Training accuracy: {}'.format(accuracy(y_train_, y_train)))
-    p_test_ = logreg_sk.predict(X_test)
-    y_test_ = (p_test_ > 0.5) * 1
-    print('Test accuracy: {}'.format(accuracy(y_test_, y_test)))
-
-
-if __name__ == '__main__':
-    main()
