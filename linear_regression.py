@@ -8,7 +8,7 @@ import numpy as np
 np.random.seed(71)
 
 
-class LinearRegression(object):
+class LinearRegression:
     """Numpy implementation of Linear Regression."""
 
     def __init__(self, batch_size=64, lr=0.01, n_epochs=1000):
@@ -92,61 +92,3 @@ class LinearRegression(object):
     def predict(self, X):
         """Predict for new data."""
         return self._model(X).reshape((-1,))
-
-
-def main():
-    import sklearn
-    from sklearn.datasets import fetch_california_housing
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import MinMaxScaler
-    from sklearn.linear_model import LinearRegression as LinearRegressionSklearn
-
-    import sys
-    sys.path.append('../numpy/')
-    from metrics import mean_squared_error
-
-    # Read California housing data.
-    housing = fetch_california_housing()
-    X = housing.data
-    y = housing.target
-
-    # Split data into training and test datasets.
-    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=71, shuffle=True)
-
-    # Feature engineering for standardizing features by min-max scaler.
-    min_max_scaler = MinMaxScaler()
-    X_train = min_max_scaler.fit_transform(X_train_raw)
-    X_test = min_max_scaler.transform(X_test_raw)
-
-    # Convert arrays to float32.
-    X_train, X_test, y_train, y_test = (
-        np.float32(X_train), np.float32(X_test), 
-        np.float32(y_train), np.float32(y_test)
-    )
-
-    # Train Numpy linear regression model.
-    linreg = LinearRegression(batch_size=64, lr=0.1, n_epochs=1000)
-    linreg.get_data(X_train, y_train, shuffle=True)
-    linreg.fit()
-    print(linreg.get_coeff())
-    y_train_ = linreg.predict(X_train)
-    print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train_, y_train)))
-    y_test_ = linreg.predict(X_test)
-    print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test_, y_test)))
-
-    # Benchmark with sklearn's linear regression model.
-    linreg_sk = LinearRegressionSklearn()
-    linreg_sk.fit(X_train, y_train) 
-    y_train_ = linreg_sk.predict(X_train)
-    print('Training mean squared error: {}'
-           .format(mean_squared_error(y_train_, y_train)))
-    y_test_ = linreg_sk.predict(X_test)
-    print('Test mean squared error: {}'
-           .format(mean_squared_error(y_test_, y_test)))
-
-
-if __name__ == '__main__':
-    main()
