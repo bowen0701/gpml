@@ -8,7 +8,7 @@ import pandas as pd
 from numpy.linalg import svd
 
 
-class CorrespondenceAnalysis(object):
+class CorrespondenceAnalysis:
     """Correspondence analysis (CA).
     
     Methods:
