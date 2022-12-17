@@ -5,7 +5,7 @@ from __future__ import print_function
 import numpy as np
 
 
-class Tensor(object):
+class Tensor:
     """Automatic differentiation."""
 
     def __init__(self, x, requires_grad=False, dependency=None):
@@ -76,11 +76,3 @@ class Tensor(object):
         return _matmul(self, as_tensor(other))
 
     # TODO: Continue implementing autograd.
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
