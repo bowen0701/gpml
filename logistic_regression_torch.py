@@ -18,10 +18,10 @@ class LogisticRegression(nn.Module):
         super().__init__()
         self.input_dim = input_dim
         # Logistic regression.
-        self.fc1 = nn.Linear(input_dim)
+        self.fc1 = nn.Linear(self.input_dim, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: Tensor) -> Tensor:
-        x = self.fc1(self.fc1)
+        x = self.fc1(x)
         x = self.sigmoid(x)
         return x
