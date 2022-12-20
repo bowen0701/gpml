@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import
 from __future__ import division
@@ -13,11 +14,11 @@ from torch import Tensor
 class LinearRegression(nn.Module):
     """PyTorch implementation of Linear Regression."""
 
-    def __init__(self, in_features: int) -> None:
+    def __init__(self, input_dim: int) -> None:
         super().__init__()
-        self.in_features = in_features
-        # Linear regression model.
-        self.fc1 = nn.Linear(self.in_features, 1)
+        self.input_dim = input_dim
+        # Linear regression.
+        self.fc1 = nn.Linear(self.input_dim, 1)
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.fc1(x)
