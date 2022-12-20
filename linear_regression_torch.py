@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -16,7 +17,8 @@ class LinearRegression(nn.Module):
         super().__init__()
         self.in_features = in_features
         # Linear regression model.
-        self.fc = nn.Linear(self.in_features, 1)
+        self.fc1 = nn.Linear(self.in_features, 1)
 
     def forward(self, x: Tensor) -> Tensor:
-        return self.fc(x)
+        x = self.fc1(x)
+        return x
