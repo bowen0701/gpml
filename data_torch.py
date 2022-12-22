@@ -46,5 +46,8 @@ def split_dataset(
     num_examples = len(dataset)
     num_train_examples = int(train_dataset_ratio * num_examples)
     num_test_examples = num_examples - num_train_examples
-    train_dataset, test_dataset = random_split(dataset, [num_train_examples, num_test_examples])
+    train_dataset, test_dataset = random_split(
+        dataset, 
+        [num_train_examples, num_test_examples]
+    )
     return train_dataset, test_dataset
