@@ -16,13 +16,36 @@ from torch.utils.data import Dataset, DataLoader
 class DataReader:
     def __init__(
         self, 
+        label_name: str,
         file_name: str, 
-        feature_names: List[str], 
-        label_name: str
+        float_feature_names: Optional[List[str]] = None, 
+        id_list_feature_names: Optional[List[str]] = None, 
+        id_score_list_feature_names: Optional[List[str]] = None, 
+        embedding_feature_names: Optional[List[str]] = None, 
     ) -> None:
+        if float_feature_names is None:
+            float_feature_names = []
+        if id_list_feature_names is None:
+            id_list_feature_names = []
+        if id_score_list_feature_names is None:
+            id_score_list_feature_names = []
+        if embedding_feature_names is None:
+            embedding_feature_names = []
+
         self.file_name = file_name
-        self.feature_names = feature_names
         self.label_name = label_name
+        self.float_feature_names = float_feature_names
+        self.id_list_feature_names = id_list_feature_names
+        self.id_score_list_feature_names = id_score_list_feature_names
+        self.embedding_feature_names = embedding_feature_names
+        self.feature_names = (
+            self.float_feature_names + 
+            self.id_list_feature_names + 
+            self.id_score_list_feature_names + 
+            self.embedding_feature_names
+        )
+        if len(self.feature_names) < 1:
+            raise ValueError("Need to at least set up one feature name.")
     
     def __call__(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         data_df = pd.read_csv(self.file_name)
