@@ -4,15 +4,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from typing import Any, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
+import pandas as pd
 
 import torch
 import torch.nn as nn
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader, random_split
-from torchvision.transforms import ToTensor, Lambda
+from torch.utils.data import Dataset, DataLoader
+
+
+def data_reader(
+    file_name: str, 
+    feature_names: List[str], 
+    label_name: str
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    data_df = pd.read_csv(file_name)
+    examples_df, labels_df = data_df.loc[:, feature_names], data_df.loc[:, label_name]
+    return examples_df, labels_df
 
 
 class CustomDataset(Dataset):
