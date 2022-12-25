@@ -13,14 +13,23 @@ from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
 
 
-def data_reader(
-    file_name: str, 
-    feature_names: List[str], 
-    label_name: str
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    data_df = pd.read_csv(file_name)
-    examples_df, labels_df = data_df.loc[:, feature_names], data_df.loc[:, label_name]
-    return examples_df, labels_df
+class DataReader:
+    def __init__(
+        self, 
+        file_name: str, 
+        feature_names: List[str], 
+        label_name: str
+    ) -> None:
+        self.file_name = file_name
+        self.feature_names = feature_names
+        self.label_name = label_name
+    
+    def __call__(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        data_df = pd.read_csv(self.file_name)
+        examples_df, labels_df = (
+            data_df.loc[:, self.feature_names], data_df.loc[:, self.label_name]
+        )
+        return examples_df, labels_df
 
 
 class CustomDataset(Dataset):
