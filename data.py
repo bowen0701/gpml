@@ -23,6 +23,9 @@ class DataReader:
         id_score_list_feature_names: Optional[List[str]] = None, 
         embedding_feature_names: Optional[List[str]] = None, 
     ) -> None:
+        self.file_name = file_name
+        self.label_name = label_name
+
         if float_feature_names is None:
             float_feature_names = []
         if id_list_feature_names is None:
@@ -32,8 +35,6 @@ class DataReader:
         if embedding_feature_names is None:
             embedding_feature_names = []
 
-        self.file_name = file_name
-        self.label_name = label_name
         self.float_feature_names = float_feature_names
         self.id_list_feature_names = id_list_feature_names
         self.id_score_list_feature_names = id_score_list_feature_names
