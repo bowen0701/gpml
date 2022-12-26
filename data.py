@@ -59,7 +59,7 @@ class DataReader:
 class CustomDataset(Dataset):
     def __init__(
         self, 
-        data_reader: Any = None, 
+        data_reader: DataReader, 
         transform: Any = None, 
         target_transform: Any = None,
     ) -> None:
