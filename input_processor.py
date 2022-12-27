@@ -13,6 +13,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
+from data import InputData
+
 
 class InputPreprocData(NamedTuple):
     float_features: np.ndarray
@@ -33,8 +35,8 @@ class InputPreproc:
 
     def __call__(
         self,
-        input_data: NamedTuple,
-    ) -> NamedTuple:
+        input_data: InputData,
+    ) -> InputPreprocData:
         labels_df = input_data.labels
         
         features_df = input_data.features
