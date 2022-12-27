@@ -53,7 +53,7 @@ class DataReader:
         if len(self.feature_names) < 1:
             raise ValueError("Need to at least set up one feature name.")
     
-    def __call__(self) -> NamedTuple:
+    def __call__(self) -> InputData:
         data_df = pd.read_csv(self.file_name)
         features_df, labels_df = (
             data_df.loc[:, self.feature_names], data_df.loc[:, self.label_name]
