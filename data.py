@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -11,6 +11,11 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
+
+
+class InputData(NamedTuple):
+    features: np.ndarray
+    labels: np.ndarray
 
 
 class DataReader:
@@ -48,16 +53,15 @@ class DataReader:
         if len(self.feature_names) < 1:
             raise ValueError("Need to at least set up one feature name.")
     
-    def __call__(self) -> Dict[str, pd.DataFrame]:
+    def __call__(self) -> NamedTuple:
         data_df = pd.read_csv(self.file_name)
         features_df, labels_df = (
             data_df.loc[:, self.feature_names], data_df.loc[:, self.label_name]
         )
-        input_data = {
-            "features": features_df,
-            "labels": labels_df,
-        }
-        return input_data
+        return InputData(
+            features=features_df,
+            labels=labels_df
+        )
 
 
 class CustomDataset(Dataset):
