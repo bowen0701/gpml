@@ -48,12 +48,16 @@ class DataReader:
         if len(self.feature_names) < 1:
             raise ValueError("Need to at least set up one feature name.")
     
-    def __call__(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def __call__(self) -> Dict[str, pd.DataFrame]:
         data_df = pd.read_csv(self.file_name)
-        examples_df, labels_df = (
+        features_df, labels_df = (
             data_df.loc[:, self.feature_names], data_df.loc[:, self.label_name]
         )
-        return examples_df, labels_df
+        input_data = {
+            "features": features_df,
+            "labels": labels_df,
+        }
+        return input_data
 
 
 class CustomDataset(Dataset):
