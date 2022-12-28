@@ -1,3 +1,3 @@
-# Machine Learning 
+# Machine Learning in Production
 
-This repo is to collect my Python implementations and notebooks on machine learning models.
+This repo is to collect my Python implementations of ML/DL models in production.
