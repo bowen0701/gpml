@@ -51,7 +51,7 @@ class InputPreproc:
 
         # Preprocess id_list features.
         if self.is_train:
-            self.id_list_features_metadata = self.preproc_id_list_features_metadata(
+            self.id_list_features_metadata = self.get_id_list_features_metadata(
                 id_list_features_np
             )
 
@@ -95,7 +95,7 @@ class InputPreproc:
             embedding_features_np,
         )
 
-    def preproc_id_list_features_metadata(
+    def get_id_list_features_metadata(
         self,
         id_list_examples_np: np.ndarray,
     ) -> Dict[str, Dict[str, int]]:
