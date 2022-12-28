@@ -1,3 +1,3 @@
-# Machine Learning in Production
+# Machine Learning Engineering for Production
 
-This repo is to collect my Python implementations of ML/DL models in production.
+This repo is to collect my Python implementations of ML engineering for production.
