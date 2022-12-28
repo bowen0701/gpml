@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 from typing import Dict, OrderedDict, Tuple
+from classes import dataclass
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -16,7 +17,8 @@ from torch import Tensor
 from data import InputData
 
 
-class InputPreprocData(NamedTuple):
+@dataclass
+class InputPreprocData:
     float_features: np.ndarray
     id_list_features: np.ndarray
     id_score_list_features: np.ndarray

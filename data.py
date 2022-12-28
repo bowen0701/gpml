@@ -2,7 +2,8 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, NamedTuple, Optional, Tuple
+from typing import Any, List, Optional, Tuple
+from classes import dataclass
 
 import numpy as np
 import pandas as pd
@@ -13,7 +14,8 @@ from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
 
 
-class InputData(NamedTuple):
+@dataclass
+class InputData:
     features: np.ndarray
     labels: np.ndarray
 
