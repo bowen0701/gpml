@@ -14,7 +14,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from data import InputData
+from data_loader import DataReader, InputData
 
 
 @dataclass
