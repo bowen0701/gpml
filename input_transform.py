@@ -18,7 +18,7 @@ from data_loader import DataReader, InputData
 
 
 @dataclass
-class InputPreprocData:
+class InputTransformedData:
     float_features: np.ndarray
     id_list_features: np.ndarray
     id_score_list_features: np.ndarray
@@ -26,7 +26,7 @@ class InputPreprocData:
     labels: np.ndarray
 
 
-class InputPreproc:
+class InputTransform:
     def __init__(
         self,
         data_reader: DataReader,
@@ -38,7 +38,7 @@ class InputPreproc:
     def __call__(
         self,
         input_data: InputData,
-    ) -> InputPreprocData:
+    ) -> InputTransformedData:
         labels_df = input_data.labels
         
         features_df = input_data.features
@@ -55,19 +55,19 @@ class InputPreproc:
                 id_list_features_np
             )
 
-        id_list_features_preproc_np = self.id_list_features_transform(
+        id_list_features_transformed_np = self.id_list_features_transform(
             id_list_features_np
         )
         
         # Preprocess id_score_list features.
-        id_score_list_features_preproc_np = self.id_score_list_features_transform(
+        id_score_list_features_transformed_np = self.id_score_list_features_transform(
             id_score_list_features_np
         )
 
-        return InputPreprocData(
+        return InputTransformedData(
             float_features=float_features_np,
-            id_list_features=id_list_features_preproc_np,
-            id_score_list_features=id_score_list_features_preproc_np,
+            id_list_features=id_list_features_transformed_np,
+            id_score_list_features=id_score_list_features_transformed_np,
             embedding_features=embedding_features_np,
             labels=labels_df.values
         )
@@ -115,23 +115,23 @@ class InputPreproc:
         self,
         id_list_features_np: np.ndarray,
     ) -> np.ndarray:
-        id_list_features_preproc_np = deepcopy(id_list_features_np)
+        id_list_features_transformed_np = deepcopy(id_list_features_np)
 
-        for c in range(id_list_features_preproc_np.shape[1]):
+        for c in range(id_list_features_transformed_np.shape[1]):
             # Convert category data to idx, with unknown category mapping to largest idx + 1.
             # Note: The unknown category would only appear in the test data.
             data_idx_map = self.id_list_features_metadata[
                 self.data_reader.id_list_feature_names[c]
             ]
             data2idx = lambda x: data_idx_map.get(x, len(data_idx_map))
-            result = np.array(list(map(data2idx, id_list_features_preproc_np[:, c])))
-            id_list_features_preproc_np[:, c] = result
+            result = np.array(list(map(data2idx, id_list_features_transformed_np[:, c])))
+            id_list_features_transformed_np[:, c] = result
         
-        return id_list_features_preproc_np.astype(np.int64)
+        return id_list_features_transformed_np.astype(np.int64)
     
     def id_score_list_features_transform(
         self,
         id_score_list_features_np: np.ndarray,
     ) -> np.ndarray:
-        id_score_list_features_preproc_np = deepcopy(id_score_list_features_np)
-        return id_score_list_features_preproc_np.astype(np.float64)
+        id_score_list_features_transformed_np = deepcopy(id_score_list_features_np)
+        return id_score_list_features_transformed_np.astype(np.float64)
