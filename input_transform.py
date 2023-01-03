@@ -34,6 +34,7 @@ class InputTransform:
     ) -> None:
         self.data_reader = data_reader
         self.is_train = is_train
+        self.id_list_features_metadata = None
 
     def __call__(
         self,
