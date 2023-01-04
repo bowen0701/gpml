@@ -13,3 +13,23 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torch import Tensor
+
+from data_loader import DataReader
+
+
+class DenseFeatureTransform:
+    def __init__(
+        self,
+        data_reader: DataReader,
+        is_train: bool = True
+    ) -> None:
+        pass
+
+
+class SparseFeatureTransform:
+    def __init__(
+        self,
+        data_reader: DataReader,
+        is_train: bool = True
+    ) -> None:
+        pass
