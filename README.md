@@ -1,3 +1,3 @@
-# Machine Learning Engineering in Production
+# Machine Learning Engineering & Research
 
-This repo is to collect my Python implementations of ML engineering in production.
+This repo is to collect my Python implementations of ML engineering and research.
