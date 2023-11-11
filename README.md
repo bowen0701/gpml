@@ -1,3 +1,3 @@
-# Core Machine Learning
+# Machine Learning
 
-This repo is to collect my Python implementations of ML engineering and research.
+This repo is to collect my Python implementations of machine learning engineering and algorithms.
