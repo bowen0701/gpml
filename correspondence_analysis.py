@@ -19,29 +19,34 @@ class CorrespondenceAnalysis:
     ### Usage
 
     ```python
-    corranal = CA(aggregate_cnt)
-    corranal.fit()
-    coord_df = corranal.get_coordinates()
-    inertia_prop = corranal.score_inertia()
+    ca = CorrespondenceAnalysis(agg_df)
+    ca.fit()
+
+    coord_df = ca.get_coordinates(option='symmetric')
+    inertia_prop = ca.score_inertia()
     ```
     """
 
-    def __init__(self, df):
+    def __init__(self, agg_df):
         """Create a new Correspondence Analysis.
         
         Args:
-          df: Pandas DataFrame, with row and column names.
+          agg_df: Pandas DataFrame, with row and column names.
           
         Raises:
           TypeError: Input data  is not a pandas DataFrame
           ValueError: Input data  contains missing values.
           TypeError: Input data  contains data types other than numeric.
         """
-        if isinstance(df, pd.DataFrame) is not True:
-            raise TypeError('Input data is not a Pandas DataFrame.')  
-        self._rows = np.array(df.index)
-        self._cols = np.array(df.columns)
-        self._np_data = np.array(df.values)      
+        self.agg_df = agg_df
+
+        if isinstance(self.agg_df, pd.DataFrame) is not True:
+            raise TypeError('Input data is not a Pandas DataFrame.')
+
+        self._rows = np.array(self.agg_df.index)
+        self._cols = np.array(self.agg_df.columns)
+        self._np_data = np.array(self.agg_df.values)
+
         if np.isnan(self._np_data).any():
             raise ValueError('Input data contains missing values.')
         if np.issubdtype(self._np_data.dtype, np.number) is not True:
@@ -74,9 +79,11 @@ class CorrespondenceAnalysis:
         self._V = Vt.T
         self._SV = np.diag(sv)
         self._inertia = np.power(sv, 2)
+
         # Pricipal coordinates for rows and columns.
         self._F = self._Dr_invsqrt.dot(self._U).dot(self._SV)
         self._G = self._Dc_invsqrt.dot(self._V).dot(self._SV)
+
         # Standard coordinates for rows and columns.
         self._Phi = self._Dr_invsqrt.dot(self._U)
         self._Gam = self._Dc_invsqrt.dot(self._V)
