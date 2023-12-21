@@ -1,3 +1,3 @@
-# General Purpose Machine Learning
+# Core Machine Learning
 
-This repo is to collect my Python implementations of machine learning engineering and algorithms.
+This repo is to collect my Python implementations of machine learning engineering.
