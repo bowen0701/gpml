@@ -2,6 +2,12 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
+import requests
+from requests.models import Response
+import bs4
+from typing import Dict
+
+
 class NlpGutenburgLoader:
     def __init__(self, top_books_category: str = "Top 100 EBooks yesterday"):
         self.frequently_download_url = "https://www.gutenberg.org/browse/scores/top"
@@ -37,7 +43,7 @@ class NlpGutenburgLoader:
     def load_top_books(self):
         for book_name, book_url in iter(self.top_book_names_urls.items()):
             book_title = book_name.rsplit(" by", maxsplit=1)[0]
-            print(f"book_title: {book_title}")
+            print(f"Book title: {book_title}")
             
             req = NlpGutenburgLoader.get_request(book_url)
             book_text = req.text
@@ -46,12 +52,13 @@ class NlpGutenburgLoader:
             # Truncate head substring.
             truncate_head_substr = f"*** START OF THE PROJECT GUTENBERG EBOOK {book_title.upper()} ***"
             book_text = book_text.split(truncate_head_substr)[1]
-            print(f"Truncate head substring is done!")
+            print(f"Truncating head substring is done!")
 
             # Truncate tail substring.
             truncate_tail_substr = f"*** END OF THE PROJECT GUTENBERG EBOOK {book_title.upper()} ***"
             book_text = book_text.split(truncate_tail_substr)[0]
-            print(f"Truncate tail substring is done!")
+            print(f"Truncating tail substring is done!")
             
             # TODO: Preprocessing text.
             break
+
