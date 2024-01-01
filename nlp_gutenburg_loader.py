@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
-class GutenburgLoader:
+class NlpGutenburgLoader:
     def __init__(self, top_books_category: str = "Top 100 EBooks yesterday"):
         self.frequently_download_url = "https://www.gutenberg.org/browse/scores/top"
         self.top_books_category = top_books_category
@@ -17,7 +17,7 @@ class GutenburgLoader:
         return req
     
     def get_top_book_names_urls(self) -> Dict[str, str]:
-        gutenberg_req = GutenburgLoader.get_request(self.frequently_download_url)
+        gutenberg_req = NlpGutenburgLoader.get_request(self.frequently_download_url)
         gutenberg_soup = bs4.BeautifulSoup(gutenberg_req.text)
 
         self.top_book_names_urls = dict()
@@ -39,7 +39,7 @@ class GutenburgLoader:
             book_title = book_name.rsplit(" by", maxsplit=1)[0]
             print(f"book_title: {book_title}")
             
-            req = GutenburgLoader.get_request(book_url)
+            req = NlpGutenburgLoader.get_request(book_url)
             book_text = req.text
             print("Starting truncating book text.")
 
